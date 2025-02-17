@@ -1,0 +1,46 @@
+/* styles/dragAndDrop.css */
+
+.drag-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    border: 2px dashed #cccccc;
+    border-radius: 8px;
+    background-color: #f8f8f8;
+    transition: background-color 0.3s ease-in-out;
+  }
+  
+  .drag-container:hover {
+    background-color: #ececec;
+  }
+  
+  .drag-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    background: white;
+    border-radius: 5px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .drag-item:hover {
+    transform: scale(1.02);
+  }
+  
+  .remove-button {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.2s ease-in-out;
+  }
+  
+  .remove-button:hover {
+    background-color: #e60000;
+  }
+  
