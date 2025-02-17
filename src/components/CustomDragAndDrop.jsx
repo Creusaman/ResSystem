@@ -22,10 +22,10 @@ import { DndContext, closestCenter } from "@dnd-kit/core";
 import { SortableContext, arrayMove, horizontalListSortingStrategy } from "@dnd-kit/sortable";
 import { Image, Video, Plus, Trash, UploadCloud } from "lucide-react";
 import imageCompression from "browser-image-compression";
-import "./CustomDropdown.css";
+import "./CustomDragAndDrop.css";
 
 /**
- * 📌 Componente `CustomDropdown` atualizado para gerenciar upload e reordenação de mídias.
+ * 📌 Componente `CustomDragAndDrop` atualizado para gerenciar upload e reordenação de mídias.
  *
  * 🔹 **Funcionalidades:**
  * ✅ Permite adicionar imagens e vídeos clicando ou arrastando para a área de upload.
@@ -39,7 +39,7 @@ import "./CustomDropdown.css";
  * 🔧 **Integração:** Pode ser usado em `AccommodationForm.jsx`, `RulesManager.jsx` e outros locais.
  */
 
-const CustomDropdown = ({ files = [], setFiles }) => {
+const CustomDragAndDrop = ({ files = [], setFiles }) => {
     const [mediaFiles, setMediaFiles] = useState(Array.isArray(files) ? files : []);
   
     useEffect(() => {
@@ -121,4 +121,4 @@ const CustomDropdown = ({ files = [], setFiles }) => {
     );
   };
   
-  export default CustomDropdown;
+  export default CustomDragAndDrop;

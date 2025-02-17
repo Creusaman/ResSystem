@@ -8,7 +8,7 @@ import imageCompression from 'browser-image-compression';
 import { uploadFile, deleteFile } from '../../../services/firebaseStorageService';
 import { updateAccommodation } from '../../../services/firestoreService';
 import { useAuth } from '../../../Context/AuthProvider';
-import CustomDropdown from '../../../components/CustomDropdown';
+import CustomDragAndDrop from '../../../components/CustomDragAndDrop';
 import { Home } from 'lucide-react';
 import './AccommodationForm.css';
 import MediaManager from '../../../components/MediaManager';
@@ -94,7 +94,7 @@ function AccommodationForm({ accommodation, onSave, onClose, availableAccommodat
 
         <label>Acomodação Base</label>
         {availableAccommodations.length > 0 ? (
-          <CustomDropdown
+          <CustomDragAndDrop
             options={availableAccommodations.map(acc => ({ value: acc.id, label: acc.name }))}
             value={availableAccommodations.find(acc => acc.id === formData.baseOccupancy)}
             onChange={(selected) => setFormData({ ...formData, baseOccupancy: selected.value })}
