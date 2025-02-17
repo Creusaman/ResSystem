@@ -1,0 +1,98 @@
+body {
+  background-color: #ffffff;
+}
+
+h1 {
+  font-size: clamp(1.5rem, 6vw, 2rem);
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.input-group {
+  margin: 0.5rem 1rem;
+}
+
+.input-group .inner-padding {
+  padding: 0.5rem 1rem;
+}
+
+.dropdown-toggle {
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown-toggle:hover {
+  background-color: #357ab7;
+  color: #ffffff;
+}
+
+.btn-acao {
+  margin: 0.5rem;
+  font-size: clamp(0.75rem, 2vw, 1rem);
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.btn-editarRegra {
+  background-color: #fff200;
+  color: #070707;
+}
+
+.btn-editarRegra:hover {
+  background-color: #d7c41d;
+}
+
+.btn-criarRegra {
+  background-color: #0dff00;
+  color: #070707;
+}
+
+.btn-criarRegra:hover {
+  background-color: #288622;
+}
+
+.btn-limparCampos:hover {
+  background-color: #ff0800;
+  color: #ffffff;
+}
+
+.large-font {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+}
+
+.large-button {
+  font-size: clamp(1rem, 1.5vw, 1.25rem);
+  font-weight: bold;
+  background-color: #dcd9fa;
+  color: #000;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.large-button:hover {
+  background-color: #b0aee6;
+}
+
+.alert {
+  margin-top: 1rem;
+}
+
+.table tbody td {
+  font-size: clamp(0.75rem, 2vw, 1rem);
+}
+
+.flex-center {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.text-center {
+  text-align: center;
+}

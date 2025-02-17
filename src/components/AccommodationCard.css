@@ -1,0 +1,33 @@
+.accommodation-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    background: #fff;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .accommodation-card:hover {
+    transform: scale(1.02);
+  }
+  
+  .package-suggestion {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+  }
+  
+  .apply-package-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  
+  .apply-package-btn:hover {
+    background-color: #218838;
+  }
+  

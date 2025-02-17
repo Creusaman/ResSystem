@@ -1,0 +1,25 @@
+/* src/app/ClientDashboard/ClientDashboard.css */
+.client-dashboard {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .client-dashboard nav ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .client-dashboard nav ul li {
+    margin: 10px 0;
+  }
+  
+  .client-dashboard nav ul li a {
+    text-decoration: none;
+    color: #007bff;
+    font-size: 18px;
+  }
+  
+  .client-dashboard nav ul li a:hover {
+    text-decoration: underline;
+  }
+  

@@ -1,0 +1,67 @@
+.accommodation-form {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .accommodation-form h2 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .accommodation-form label {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .accommodation-form input,
+  .accommodation-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  .accommodation-form textarea {
+    resize: none;
+    height: 100px;
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  
+  .form-actions .btn {
+    padding: 8px 15px;
+    font-size: 14px;
+  }
+  
+  /* Responsividade */
+  @media (max-width: 768px) {
+    .accommodation-form {
+      padding: 15px;
+    }
+  
+    .accommodation-form h2 {
+      font-size: 16px;
+    }
+  
+    .form-actions {
+      flex-direction: column;
+      gap: 10px;
+    }
+  
+    .form-actions .btn {
+      width: 100%;
+    }
+  }
+  

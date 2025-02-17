@@ -1,0 +1,24 @@
+/* src/app/ClientDashboard/ViewReservation.css */
+.view-reservation {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .view-reservation ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .view-reservation li {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+  }
+  
+  .view-reservation p {
+    margin: 5px 0;
+    font-size: 16px;
+  }
+  

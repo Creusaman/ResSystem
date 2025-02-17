@@ -1,0 +1,52 @@
+.report-generator {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .report-generator h1 {
+    font-size: 24px;
+    margin-bottom: 15px;
+  }
+  
+  .report-generator label {
+    font-size: 16px;
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+  }
+  
+  .report-generator select {
+    width: 100%;
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 15px;
+  }
+  
+  .report-generator button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.3s;
+  }
+  
+  .report-generator button:hover {
+    background: #0056b3;
+  }
+  
+  .report-generator button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+  

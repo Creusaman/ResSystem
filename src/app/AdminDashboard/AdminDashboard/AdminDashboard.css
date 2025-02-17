@@ -1,0 +1,21 @@
+.admin-dashboard {
+    padding: 20px;
+    background: #f8f9fa;
+  }
+  
+  .dashboard-summary {
+    background: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .chart-container {
+    background: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  }
+  

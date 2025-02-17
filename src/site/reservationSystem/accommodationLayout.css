@@ -1,0 +1,99 @@
+.thumbs {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .myCarousel .carousel-slider .slide img {
+    border-radius: 20px;
+  }
+  
+  .thumbs-wrapper .thumbs .thumb img {
+    border-radius: 10px;
+  }
+
+  .carousel .thumb {
+    border-radius: 15px;
+  }
+  
+  #hospedagem {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.379);
+    transition: 0.3s;
+    border-radius: 12px;
+    margin-bottom: 0.5%;
+    margin-top: 0.5%;
+
+  }
+
+  .hospedagem-column-left {
+    padding: 10px;
+    background-color: rgba(231, 229, 229, 0.216);
+    border-radius: 15px;
+    border-color: rgb(83, 83, 83);
+    border-width: 1px;
+    border-style: solid;
+  }
+
+  .carousel.carousel-slider .control-arrow {
+    padding: 20px;
+    bottom: calc(50% - 90px) ;
+  }
+
+  .carousel .thumbs-wrapper {
+    margin: 10px;
+    overflow: hidden;
+}
+
+.carousel .thumbs {
+    margin-bottom: 0px;
+}
+
+.video-container {
+    position: relative;
+    overflow: hidden;  
+    border-radius: 15px; 
+    height: 0;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+}
+
+.video-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+}
+
+.myCarousel .carousel-slider .slide img, .thumbs-wrapper .thumbs .thumb img {
+    border-radius: 10px;
+    object-fit: cover;  /* Add this */
+    width: 100%;        /* Add this */
+    height: 100%;       /* Add this */
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+ 
+}
+
+.slider-wrapper {
+    background-color: black;
+    border-radius: 20px;
+}
+
+.video-thumbnail {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Added to ensure that the icon is centered vertically */
+}
+
+.video-indicator {
+  font-size: 2.5em; /* Adjust the size here */
+}
+
+

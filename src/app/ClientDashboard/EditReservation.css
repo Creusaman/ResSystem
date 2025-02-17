@@ -1,0 +1,40 @@
+/* src/app/ClientDashboard/EditReservation.css */
+.edit-reservation {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .edit-reservation form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .edit-reservation label {
+    margin: 10px 0;
+    font-weight: bold;
+  }
+  
+  .edit-reservation input {
+    padding: 8px;
+    margin: 5px 0;
+    width: 100%;
+    max-width: 300px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .edit-reservation button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .edit-reservation button:hover {
+    background-color: #218838;
+  }
+  

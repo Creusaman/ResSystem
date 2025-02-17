@@ -1,0 +1,16 @@
+.custom-dropdown {
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 10px;
+  }
+  
+  .css-1hb7zxy-IndicatorsContainer {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+  }
+  
+  .css-1okebmr-indicatorSeparator {
+    display: none;
+  }
+  

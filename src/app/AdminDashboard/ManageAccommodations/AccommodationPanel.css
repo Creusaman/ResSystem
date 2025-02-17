@@ -1,0 +1,52 @@
+.accommodation-panel {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .accommodation-panel h2 {
+    margin-bottom: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .accommodation-panel .btn {
+    margin-bottom: 10px;
+  }
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+  
+  .table th,
+  .table td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #dee2e6;
+  }
+  
+  .table th {
+    background: #f1f3f5;
+  }
+  
+  .table .btn {
+    margin-right: 5px;
+  }
+  
+  .error-message {
+    margin-top: 15px;
+    color: red;
+    font-size: 14px;
+  }
+  
+  /* Responsividade */
+  @media (max-width: 768px) {
+    .table {
+      font-size: 14px;
+    }
+  }
+  

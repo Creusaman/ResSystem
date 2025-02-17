@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Interaction</title>
+    <style>
+        button {
+            margin: 10px;
+            padding: 8px 15px;
+        }
+
+        #output {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Device Interaction</h1>
+
+    <button onclick="registerDevice()">Register Device</button>
+    <button onclick="sendLog()">Send Log</button>
+    <button onclick="sendUser()">Send User</button>
+    <button onclick="getUserList()">Get User List</button>
+    <button onclick="getUserInfo()">Get User Info</button>
+    <button onclick="setUserInfo()">Set User Info</button>
+    <button onclick="deleteUser()">Delete User</button>
+    <button onclick="getUserName()">Get User Name</button>
+    <button onclick="setUserName()">Set User Name</button>
+    <button onclick="enableUser()">Enable User</button>
+    <button onclick="disableUser()">Disable User</button>
+    <button onclick="cleanUser()">Clean User</button>
+    <button onclick="getNewLog()">Get New Log</button>
+    <button onclick="getAllLog()">Get All Log</button>
+    <button onclick="cleanAllLogs()">Clean All Logs</button>
+    <button onclick="initSys()">Init System</button>
+    <button onclick="reboot()">Reboot</button>
+    <button onclick="cleanAdmin()">Clean Admin</button>
+    <button onclick="setTime()">Set Time</button>
+    <button onclick="setTerminalParams()">Set Terminal Parameters</button>
+    <button onclick="getDeviceInfo()">Get Device Info</button>
+    <button onclick="openDoor()">Open Door</button>
+    <button onclick="setDeviceLock()">Set Device Lock</button>
+    <button onclick="getDeviceLock()">Get Device Lock</button>
+    <button onclick="getUserLock()">Get User Lock</button>
+    <button onclick="setUserLock()">Set User Lock</button>
+    <button onclick="deleteUserLock()">Delete User Lock</button>
+    <button onclick="cleanUserLock()">Clean User Lock</button>
+    <input type="file" id="imageInput" />
+    <input type="date" id="startDate">
+    <input type="time" id="startTime">
+    <input type="date" id="endDate">
+    <input type="time" id="endTime">
+    <button onclick="setUserLock()">Set Lock</button>
+    
+
+
+
+    <div id="output"></div>
+
+    <script>
+        const outputDiv = document.getElementById("output");
+        const ws = new WebSocket('ws://localhost:7792'); // Adjust if your WebSocket server is on a different host or port
+
+        ws.onopen = () => {
+    // Register the UI with the server.
+    ws.send(JSON.stringify({ cmd: 'reg', sn: 'UI' }));
+
+    outputDiv.innerHTML += '<p>Connected to the server.</p>';
+};
+
+
+        ws.onerror = (error) => {
+            outputDiv.innerHTML += '<p>Error occurred:</p>' + '<pre>' + JSON.stringify(error) + '</pre>';
+        };
+
+        ws.onmessage = (event) => {
+            outputDiv.innerHTML += '<p>Received:</p>' + '<pre>' + event.data + '</pre>';
+        };
+
+        function sendDataToServer(data) {
+    if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(data));
+        outputDiv.innerHTML += '<p>Sent:</p>' + '<pre>' + JSON.stringify(data) + '</pre>';
+    } else {
+        switch (ws.readyState) {
+            case WebSocket.CONNECTING:
+                outputDiv.innerHTML += '<p>WebSocket is connecting. Please wait.</p>';
+                break;
+            case WebSocket.CLOSING:
+            case WebSocket.CLOSED:
+                outputDiv.innerHTML += '<p>WebSocket is closed or closing. Try to refresh the page or check the server.</p>';
+                break;
+            default:
+                outputDiv.innerHTML += '<p>WebSocket is in an unknown state.</p>';
+        }
+    }
+    console.log(data)
+}
+
+
+        // Functions for each command:
+
+        function registerDevice() {
+            sendDataToServer({ cmd: 'reg', sn: 'AYRG14039578' });
+        }
+
+        function sendLog() {
+            sendDataToServer({ cmd: 'sendlog' });
+        }
+
+        function sendUser() {
+            sendDataToServer({ cmd: 'senduser' });
+        }
+
+        function getUserList() {
+            sendDataToServer({ cmd: 'getuserlist' });
+        }
+
+        function getUserInfo() {
+            const enrollid = parseInt(prompt("Enter Enroll ID:"), 10);
+            const backupnum = parseInt(prompt("Enter Backup Number:"), 10);
+            sendDataToServer({ cmd: 'getuserinfo', enrollid: enrollid, backupnum: backupnum });
+        }
+
+
+        const imageInput = document.getElementById('imageInput');
+        function setUserInfo() {
+        const enrollid = parseInt(prompt("Enter Enroll ID:"), 10);
+        const name = prompt("Enter Name:");
+        const adminValue = confirm("Is Admin?") ? 1 : 0;
+        const backupnum = parseInt(prompt("Enter Backup Number:"), 10);
+
+        function handleImageChange(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function() {
+                    const fullRecord = this.result;
+                    const base64Data = fullRecord.split(",")[1]; // Extract the base64 part only
+                    
+                    sendDataToServer({
+                        cmd: 'setuserinfo',
+                        enrollid: enrollid,
+                        name: name,
+                        backupnum: backupnum,
+                        admin: adminValue,
+                        record: base64Data  // Send only the base64 data
+                    });
+
+                    imageInput.removeEventListener("change", handleImageChange);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        if (backupnum === 50) {
+            alert("Please click the 'Choose File' input to select an image.");
+            imageInput.addEventListener("change", handleImageChange);
+        } else {
+            const record = parseInt(prompt("Enter Record:"), 10);
+            sendDataToServer({
+                cmd: 'setuserinfo',
+                enrollid: enrollid,
+                name: name,
+                backupnum: backupnum,
+                admin: adminValue,
+                record: record
+            });
+        }
+    }
+
+
+
+
+
+
+
+             // ... Continuing from where we left off ...
+
+             function deleteUser() {
+            const enrollid = parseInt(prompt("Enter Enroll ID:"), 10);
+            sendDataToServer({ cmd: 'deleteuser', enrollid: enrollid });
+        }
+
+        function getUserName() {
+            const enrollid = parseInt(prompt("Enter Enroll ID:"), 10);
+            sendDataToServer({ cmd: 'getusername', enrollid: enrollid });
+        }
+
+        function setUserName() {
+            const enrollid = parseInt(prompt("Enter Enroll ID:"), 10);
+            const name = prompt("Enter Name:");
+            sendDataToServer({ cmd: 'setusername', enrollid: enrollid, name: name });
+        }
+
+        function enableUser() {
+            const enrollid = parseInt(prompt("Enter Enroll ID:"), 10);
+            sendDataToServer({ cmd: 'enableuser', enrollid: enrollid });
+        }
+
+        function disableUser() {
+            const enrollid = parseInt(prompt("Enter Enroll ID:"), 10);
+            sendDataToServer({ cmd: 'disableuser', enrollid: enrollid });
+        }
+
+        function cleanUser() {
+            sendDataToServer({ cmd: 'cleanuser' });
+        }
+
+        function getNewLog() {
+            sendDataToServer({ cmd: 'getnewlog' });
+        }
+
+        function getAllLog() {
+            sendDataToServer({ cmd: 'getalllog' });
+        }
+
+        function cleanAllLogs() {
+            sendDataToServer({ cmd: 'cleanalllogs' });
+        }
+
+        function initSys() {
+            sendDataToServer({ cmd: 'initsys' });
+        }
+
+        function reboot() {
+            sendDataToServer({ cmd: 'reboot' });
+        }
+
+        function cleanAdmin() {
+            sendDataToServer({ cmd: 'cleanadmin' });
+        }
+
+        function setTime() {
+            sendDataToServer({ cmd: 'settime'});
+        }
+
+        function setTerminalParams() {
+            const params = prompt("Enter Terminal Parameters:");
+            sendDataToServer({ cmd: 'setterminalparams', params: params });
+        }
+
+        function getDeviceInfo() {
+            sendDataToServer({ cmd: 'getdeviceinfo' });
+        }
+
+        function openDoor() {
+            const doorid = prompt("Enter Door ID:");
+            sendDataToServer({ cmd: 'opendoor', doorid: doorid });
+        }
+
+        function setDeviceLock() {
+            const state = confirm("Lock Device?");
+            sendDataToServer({ cmd: 'setdevicelock', state: state });
+        }
+
+        function getDeviceLock() {
+            sendDataToServer({ cmd: 'getdevicelock' });
+        }
+
+        function getUserLock() {
+            const enrollid = parseInt(prompt("Enter Enroll ID:"), 10);
+            sendDataToServer({ cmd: 'getuserlock', enrollid: enrollid });
+        }
+
+        function setUserLock() {
+            const count = parseInt(prompt("How many users do you want to set the lock for?"), 10);
+
+            const records = [];
+
+            for (let i = 0; i < count; i++) {
+                const enrollid = parseInt(prompt(`Enter Enroll ID for user ${i+1}:`), 10);
+                const weekzone = parseInt(prompt(`Enter Week Zone for user ${i+1}:`), 10);
+                const group = parseInt(prompt(`Enter Group for user ${i+1}:`), 10);
+                
+                const startDate = document.getElementById('startDate').value;
+                const startTime = document.getElementById('startTime').value + ":00";  // Add seconds
+                const endDate = document.getElementById('endDate').value;
+                const endTime = document.getElementById('endTime').value + ":00";  // Add seconds
+                
+                const starttime = `${startDate} ${startTime}`;
+                const endtime = `${endDate} ${endTime}`;
+
+                records.push({
+                    enrollid: enrollid,
+                    weekzone: weekzone,
+                    group: group,
+                    starttime: starttime,
+                    endtime: endtime
+                });
+            }
+
+            sendDataToServer({ 
+                cmd: 'setuserlock', 
+                count: count, 
+                record: records
+            });
+        }
+
+
+
+
+        function deleteUserLock() {
+            const enrollid = parseInt(prompt("Enter Enroll ID:"), 10);
+            sendDataToServer({ cmd: 'deleteuserlock', enrollid: enrollid });
+        }
+
+        function cleanUserLock() {
+            sendDataToServer({ cmd: 'cleanuserlock' });
+        }
+
+
+    </script>
+</body>
+</html>

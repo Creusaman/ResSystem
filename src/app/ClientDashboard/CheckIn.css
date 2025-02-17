@@ -1,0 +1,40 @@
+/* src/app/ClientDashboard/CheckIn.css */
+.check-in {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .check-in form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .check-in label {
+    margin: 10px 0;
+    font-weight: bold;
+  }
+  
+  .check-in input {
+    padding: 8px;
+    margin: 5px 0;
+    width: 100%;
+    max-width: 300px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .check-in button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .check-in button:hover {
+    background-color: #c82333;
+  }
+  

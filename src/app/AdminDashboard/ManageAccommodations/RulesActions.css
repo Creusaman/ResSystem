@@ -1,0 +1,43 @@
+/* Rule Actions Styles */
+.rule-actions-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .btn {
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .btn-outline-primary {
+    background-color: white;
+    border: 1px solid #007bff;
+    color: #007bff;
+  }
+  
+  .btn-success {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .btn-warning {
+    background-color: #ffc107;
+    color: black;
+  }
+  
+  .btn-outline-primary:hover {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .btn-success:hover {
+    background-color: #218838;
+  }
+  
+  .btn-warning:hover {
+    background-color: #e0a800;
+  }
+  

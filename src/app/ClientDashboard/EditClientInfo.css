@@ -1,0 +1,40 @@
+/* src/app/ClientDashboard/EditClientInfo.css */
+.edit-client-info {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .edit-client-info form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .edit-client-info label {
+    margin: 10px 0;
+    font-weight: bold;
+  }
+  
+  .edit-client-info input {
+    padding: 8px;
+    margin: 5px 0;
+    width: 100%;
+    max-width: 300px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .edit-client-info button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .edit-client-info button:hover {
+    background-color: #0056b3;
+  }
+  

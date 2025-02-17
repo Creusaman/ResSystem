@@ -1,0 +1,73 @@
+.accommodation-panel {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: width 0.3s ease;
+  }
+  
+  .accommodation-panel.collapsed {
+    width: 50px;
+    overflow: hidden;
+  }
+  
+  .accommodation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .accommodation-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: white;
+    padding: 10px;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .accommodation-card:hover {
+    background-color: #e9ecef;
+  }
+  
+  .accommodation-thumbnail {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 6px;
+  }
+  
+  .accommodation-info {
+    flex-grow: 1;
+    margin-left: 10px;
+  }
+  
+  .units {
+    font-size: 14px;
+    color: #6c757d;
+  }
+  
+  .btn-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #007bff;
+  }
+  
+  .btn-delete {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .btn-delete:hover {
+    background: #c82333;
+  }
+  
