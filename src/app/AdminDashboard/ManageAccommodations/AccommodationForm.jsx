@@ -3,19 +3,37 @@ import React, { useState, useEffect } from 'react';
 import CustomDragAndDrop from 'components/DragAndDrop/CustomDragAndDrop';
 import { uploadFile, deleteFile } from 'services/firebaseStorageService';
 import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css'; // Importação do CSS do editor de texto
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+import { FaWifi, FaTv, FaUtensils, FaSwimmingPool, FaBed, FaShower, FaFire, FaKey, FaSpa, FaFan, FaPlus } from 'react-icons/fa';
+import 'react-quill/dist/quill.snow.css';
 import './AccommodationForm.css';
+
+const amenitiesList = [
+  { id: 'Wi-Fi', label: 'Wi-Fi', icon: <FaWifi /> },
+  { id: 'TV', label: 'TV', icon: <FaTv /> },
+  { id: 'Café da Manhã', label: 'Café da Manhã', icon: <FaUtensils /> },
+  { id: 'Piscina com Cascata', label: 'Piscina com Cascata', icon: <FaSwimmingPool /> },
+  { id: 'Cama King Size', label: 'Cama King Size', icon: <FaBed /> },
+  { id: 'Chuveiro Quente', label: 'Chuveiro Quente', icon: <FaShower /> },
+  { id: 'Tomadas', label: 'Tomadas', icon: <FaKey /> },
+  { id: 'Segurança', label: 'Segurança', icon: <FaFire /> },
+  { id: 'Ventilador de Teto', label: 'Ventilador de Teto', icon: <FaFan /> },
+  { id: 'Banheira de Hidromassagem', label: 'Banheira de Hidromassagem', icon: <FaSpa /> },
+  { id: 'Cozinha Comunitária', label: 'Cozinha Comunitária', icon: <FaUtensils /> },
+  { id: 'Churrasqueira', label: 'Churrasqueira', icon: <FaFire /> },
+  { id: 'Spa', label: 'Spa', icon: <FaSpa /> },
+];
 
 function AccommodationForm({ initialData, onSave, onCancel }) {
   const isEditing = Boolean(initialData);
 
-  // Estados dos campos
+  // Estados dos campos do formulário
   const [name, setName] = useState(initialData?.name || '');
   const [description, setDescription] = useState(initialData?.description || '');
   const [baseOccupancy, setBaseOccupancy] = useState(initialData?.baseOccupancy || 1);
   const [maxOccupancy, setMaxOccupancy] = useState(initialData?.maxOccupancy || 1);
   const [unitsAvailable, setUnitsAvailable] = useState(initialData?.unitsAvailable || 0);
-  const [price, setPrice] = useState(initialData?.price || 0);
   const [utilities, setUtilities] = useState(initialData?.utilities || []);
   const [files, setFiles] = useState(initialData?.files || []);
   const [removedFiles, setRemovedFiles] = useState([]);
@@ -51,7 +69,6 @@ function AccommodationForm({ initialData, onSave, onCancel }) {
         baseOccupancy,
         maxOccupancy,
         unitsAvailable,
-        price,
         utilities,
         files: uploadedFiles,
       });
@@ -62,7 +79,7 @@ function AccommodationForm({ initialData, onSave, onCancel }) {
     }
   };
 
-  const handleUtilityChange = (utility) => {
+  const handleUtilityToggle = (utility) => {
     setUtilities((prev) =>
       prev.includes(utility) ? prev.filter((u) => u !== utility) : [...prev, utility]
     );
@@ -72,83 +89,73 @@ function AccommodationForm({ initialData, onSave, onCancel }) {
     <div className="accommodation-form">
       <h2>{isEditing ? 'Editar Acomodação' : 'Nova Acomodação'}</h2>
 
-      <label>Nome:</label>
-      <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+      {/* Nome com Floating Label */}
+      <Form.Group className="form-floating mb-3">
+        <Form.Control
+          type="text"
+          id="accommodationName"
+          placeholder="Nome da Acomodação"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <Form.Label htmlFor="accommodationName">Nome da Acomodação</Form.Label>
+      </Form.Group>
 
-      <label>Descrição:</label>
-      <ReactQuill value={description} onChange={setDescription} />
+      {/* Descrição com Floating Label */}
+      <Form.Group className="form-floating mb-3">
+        <ReactQuill value={description} onChange={setDescription} />
+      </Form.Group>
 
-      <label>Ocupação Base:</label>
-      <input
-        type="number"
-        min="1"
-        value={baseOccupancy}
-        onChange={(e) => setBaseOccupancy(Number(e.target.value))}
-      />
+      {/* Campos na mesma linha */}
+      <div className="form-row">
+        <Form.Group className="form-floating flex-grow-1">
+          <Form.Control
+            type="number"
+            id="baseOccupancy"
+            placeholder="Ocupação Base"
+            value={baseOccupancy}
+            min="1"
+            onChange={(e) => setBaseOccupancy(Number(e.target.value))}
+          />
+          <Form.Label htmlFor="baseOccupancy">Ocupação Base</Form.Label>
+        </Form.Group>
 
-      <label>Ocupação Máxima:</label>
-      <input
-        type="number"
-        min={baseOccupancy}
-        value={maxOccupancy}
-        onChange={(e) => setMaxOccupancy(Number(e.target.value))}
-      />
+        <Form.Group className="form-floating flex-grow-1">
+          <Form.Control
+            type="number"
+            id="maxOccupancy"
+            placeholder="Ocupação Máxima"
+            value={maxOccupancy}
+            min={baseOccupancy}
+            onChange={(e) => setMaxOccupancy(Number(e.target.value))}
+          />
+          <Form.Label htmlFor="maxOccupancy">Ocupação Máxima</Form.Label>
+        </Form.Group>
 
-      <label>Unidades Disponíveis:</label>
-      <input
-        type="number"
-        min="0"
-        value={unitsAvailable}
-        onChange={(e) => setUnitsAvailable(Number(e.target.value))}
-      />
+        <Form.Group className="form-floating flex-grow-1">
+          <Form.Control
+            type="number"
+            id="unitsAvailable"
+            placeholder="Unidades Disponíveis"
+            value={unitsAvailable}
+            min="0"
+            onChange={(e) => setUnitsAvailable(Number(e.target.value))}
+          />
+          <Form.Label htmlFor="unitsAvailable">Unidades Disponíveis</Form.Label>
+        </Form.Group>
+      </div>
 
-      <label>Preço por Noite:</label>
-      <input
-        type="number"
-        min="0"
-        value={price}
-        onChange={(e) => setPrice(Number(e.target.value))}
-      />
+      {/* Upload de Imagens + Botão de Adicionar */}
+      <div className="image-upload-section">
+        <CustomDragAndDrop initialItems={files} onItemsUpdate={setFiles} />
 
-     
-
-      <label>Fotos e Vídeos:</label>
-      <CustomDragAndDrop initialItems={files} onItemsUpdate={setFiles} />
+      </div>
 
       <div className="button-group">
-        <button onClick={handleSave}>
-          {isEditing ? 'Salvar Alterações' : 'Criar Acomodação'}
-        </button>
-        <button onClick={onCancel}>
+        <Button onClick={handleSave}>{isEditing ? 'Salvar Alterações' : 'Criar Acomodação'}</Button>
+        <Button variant="secondary" onClick={onCancel}>
           {isEditing ? 'Cancelar Alterações' : 'Limpar Campos'}
-        </button>
-      </div>
-      <label>Utilitários:</label>
-      <div className="utilities-container">
-        {[
-          'Wi-Fi',
-          'TV',
-          'Frigobar',
-          'Piscina com Cascata',
-          'Cozinha Comunitária',
-          'Banheira de Hidromassagem',
-          'Ventilador de Teto',
-          'Chuveiro Quente',
-          'Tomadas',
-          'Segurança',
-          'Café da Manhã',
-          'Churrasqueira',
-          'Spa',
-        ].map((utility) => (
-          <label key={utility} className="utility-checkbox">
-            <input
-              type="checkbox"
-              checked={utilities.includes(utility)}
-              onChange={() => handleUtilityChange(utility)}
-            />
-            {utility}
-          </label>
-        ))}
+        </Button>
       </div>
     </div>
   );

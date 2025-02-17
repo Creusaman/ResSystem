@@ -28,6 +28,7 @@
     "quill": "^2.0.3",
     "react": "^18.3.1",
     "react-beautiful-dnd": "^13.1.1",
+    "react-bootstrap": "^2.10.9",
     "react-bootstrap-sweetalert": "^5.2.0",
     "react-chartjs-2": "^5.3.0",
     "react-datepicker": "^4.11.0",

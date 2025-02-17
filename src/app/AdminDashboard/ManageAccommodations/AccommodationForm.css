@@ -133,3 +133,35 @@
     width: 100%;
   }
 }
+
+.form-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.image-upload-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.btn-add-file {
+  width: 60px;
+  height: 60px;
+  border: 2px solid #007bff;
+  background: white;
+  color: #007bff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-add-file:hover {
+  background: #007bff;
+  color: white;
+}
