@@ -1,67 +1,135 @@
 .accommodation-form {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.accommodation-form h2 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.accommodation-form label {
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+.accommodation-form input,
+.accommodation-form textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-size: 14px;
+  background: #f9f9f9;
+  transition: border 0.3s ease-in-out;
+}
+
+.accommodation-form input:focus,
+.accommodation-form textarea:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.accommodation-form textarea {
+  resize: none;
+  height: 100px;
+}
+
+/* Estilização do Quill Editor */
+.ql-container {
+  border: 1px solid #dee2e6 !important;
+  border-radius: 4px;
+  background: #f9f9f9;
+}
+
+.ql-editor {
+  min-height: 120px;
+}
+
+/* Estilização dos Utilitários */
+.utilities-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.utility-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.utility-checkbox input {
+  cursor: pointer;
+}
+
+/* Botões */
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.button-group button {
+  padding: 10px 15px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.3s ease-in-out;
+}
+
+.button-group button:first-child {
+  background: #007bff;
+  color: white;
+}
+
+.button-group button:first-child:hover {
+  background: #0056b3;
+}
+
+.button-group button:last-child {
+  background: #6c757d;
+  color: white;
+}
+
+.button-group button:last-child:hover {
+  background: #545b62;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .accommodation-form {
+    padding: 15px;
   }
-  
+
   .accommodation-form h2 {
     font-size: 18px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 20px;
   }
-  
-  .accommodation-form label {
-    display: block;
-    font-size: 14px;
-    font-weight: bold;
-    margin-bottom: 5px;
+
+  .utilities-container {
+    flex-direction: column;
   }
-  
-  .accommodation-form input,
-  .accommodation-form textarea {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #dee2e6;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-  
-  .accommodation-form textarea {
-    resize: none;
-    height: 100px;
-  }
-  
-  .form-actions {
-    display: flex;
-    justify-content: flex-end;
+
+  .button-group {
+    flex-direction: column;
     gap: 10px;
   }
-  
-  .form-actions .btn {
-    padding: 8px 15px;
-    font-size: 14px;
+
+  .button-group button {
+    width: 100%;
   }
-  
-  /* Responsividade */
-  @media (max-width: 768px) {
-    .accommodation-form {
-      padding: 15px;
-    }
-  
-    .accommodation-form h2 {
-      font-size: 16px;
-    }
-  
-    .form-actions {
-      flex-direction: column;
-      gap: 10px;
-    }
-  
-    .form-actions .btn {
-      width: 100%;
-    }
-  }
-  
+}

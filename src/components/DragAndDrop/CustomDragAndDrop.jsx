@@ -1,10 +1,11 @@
+// src/components/DragAndDrop/CustomDragAndDrop.jsx
 import React from 'react';
-import { DndContext, SortableContext } from '@dnd-kit/core';
-import DraggableItem from './DraggableItem';
-import DragOverlayComponent from './DragOverlay';
-import { useDragAndDrop } from '../../hooks/useDragAndDrop';
-
-import '../../styles/dragAndDrop.css'; // Importação do CSS global
+import { DndContext } from '@dnd-kit/core';
+import { SortableContext } from '@dnd-kit/sortable'; // ✅ Importação corrigida
+import DraggableItem from 'components/DragAndDrop/DraggableItem';
+import DragOverlayComponent from 'components/DragAndDrop/DragOverlay';
+import useDragAndDrop from 'components/DragAndDrop/hooks/useDragAndDrop'; // ✅ Corrigido para `export default`
+import 'components/DragAndDrop/styles/dragAndDrop.css'; // ✅ Caminho corrigido
 
 function CustomDragAndDrop({ initialItems }) {
   const { items, setItems, activeId, setActiveId, handleDragEnd } = useDragAndDrop(initialItems);

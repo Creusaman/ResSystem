@@ -1,14 +1,14 @@
-// hooks/useDragAndDrop.js
+// src/components/DragAndDrop/hooks/useDragAndDrop.js
 import { useState } from 'react';
 import { arrayMove } from '@dnd-kit/sortable';
 
 /**
  * Hook personalizado para gerenciar o estado do Drag and Drop.
- * 
+ *
  * @param {Array} initialItems - Lista inicial de itens no drag and drop.
  * @returns {Object} - Contém os estados e funções para manipular os itens.
  */
-export function useDragAndDrop(initialItems) {
+function useDragAndDrop(initialItems) {
   const [items, setItems] = useState(initialItems);
   const [activeId, setActiveId] = useState(null);
 
@@ -26,3 +26,5 @@ export function useDragAndDrop(initialItems) {
 
   return { items, setItems, activeId, setActiveId, handleDragEnd };
 }
+
+export default useDragAndDrop; // ✅ Corrigido para exportação padrão
