@@ -8,6 +8,7 @@ import Button from 'react-bootstrap/Button';
 import { FaWifi, FaTv, FaUtensils, FaSwimmingPool, FaBed, FaShower, FaFire, FaKey, FaSpa, FaFan, FaPlus } from 'react-icons/fa';
 import 'react-quill/dist/quill.snow.css';
 import './AccommodationForm.css';
+import MediaDropZone from 'components/MediaDropZone/MediaDropZone';
 
 const amenitiesList = [
   { id: 'Wi-Fi', label: 'Wi-Fi', icon: <FaWifi /> },
@@ -24,6 +25,7 @@ const amenitiesList = [
   { id: 'Churrasqueira', label: 'Churrasqueira', icon: <FaFire /> },
   { id: 'Spa', label: 'Spa', icon: <FaSpa /> },
 ];
+
 
 function AccommodationForm({ initialData, onSave, onCancel }) {
   const isEditing = Boolean(initialData);
@@ -85,6 +87,9 @@ function AccommodationForm({ initialData, onSave, onCancel }) {
     );
   };
 
+  const [items, setItems] = useState([]);
+
+
   return (
     <div className="accommodation-form">
       <h2>{isEditing ? 'Editar Acomodação' : 'Nova Acomodação'}</h2>
@@ -145,11 +150,16 @@ function AccommodationForm({ initialData, onSave, onCancel }) {
         </Form.Group>
       </div>
 
-      {/* Upload de Imagens + Botão de Adicionar */}
-      <div className="image-upload-section">
-        <CustomDragAndDrop initialItems={files} onItemsUpdate={setFiles} />
 
+      <div className="min-h-screen bg-gray-100 p-8">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-2xl font-bold mb-6">Media Upload</h1>
+        <MediaDropZone 
+          items={items} 
+          onItemsChange={setItems}
+        />
       </div>
+    </div>
 
       <div className="button-group">
         <Button onClick={handleSave}>{isEditing ? 'Salvar Alterações' : 'Criar Acomodação'}</Button>
