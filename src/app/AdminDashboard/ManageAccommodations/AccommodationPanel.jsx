@@ -3,17 +3,20 @@ import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import './AccommodationPanel.css';
 
-function AccommodationPanel({ accommodations, onSelect, onDelete, mode = 'default', selectedAccommodations, setSelectedAccommodations }) {
+function AccommodationPanel({ accommodations, onSelect, onDelete, mode = 'default', selectedAccommodations, setSelectedAccommodations, hasUnsavedChanges }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   console.log("Acomodações carregadas:", accommodations);
 
   const toggleSelection = (acc) => {
-    console.log(acc.files)
+    if (hasUnsavedChanges) {
+      const confirmChange = window.confirm("Existem alterações não salvas. Deseja continuar e perder as mudanças?");
+      if (!confirmChange) return;
+    }
+    
     if (mode === 'rules' || mode === 'reservations') {
       setSelectedAccommodations((prev) =>
         prev.includes(acc.id) ? prev.filter((id) => id !== acc.id) : [...prev, acc.id]
       );
-      
     } else {
       onSelect(acc);
     }
@@ -35,7 +38,7 @@ function AccommodationPanel({ accommodations, onSelect, onDelete, mode = 'defaul
           accommodations.map((acc) => (
             <div key={acc.id} className="col-md-4 mb-3">
               <Card className={`accommodation-card ${selectedAccommodations?.includes(acc.id) ? 'border-primary' : ''}`} onClick={() => toggleSelection(acc)}>
-              <Card.Img variant="top" src={acc.files?.length ? acc.files[0].url : '/default-placeholder.png'} alt={acc.name} />
+                <Card.Img variant="top" src={acc.files?.length ? acc.files[0].url : '/default-placeholder.png'} alt={acc.name} />
                 <Card.Body>
                   <Card.Title className="fw-bold">{acc.name}</Card.Title>
                   <Card.Text>{acc.unitsAvailable} unidades disponíveis</Card.Text>
