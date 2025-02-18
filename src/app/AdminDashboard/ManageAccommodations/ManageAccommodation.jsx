@@ -12,18 +12,20 @@ function ManageAccommodation() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const loadAccommodations = async () => {
-      try {
-        const data = await fetchAllAccommodations();
-        setAccommodations(data);
-      } catch (err) {
-        console.error('Erro ao carregar acomodações:', err);
-        setError('Erro ao carregar acomodações.');
-      }
-    };
-    loadAccommodations();
-  }, [fetchAllAccommodations]);
+useEffect(() => {
+  const loadAccommodations = async () => {
+    try {
+      const data = await fetchAllAccommodations();
+      console.log("Dados recebidos do Firestore:", data); // Debug
+      setAccommodations(data);
+    } catch (err) {
+      console.error('Erro ao carregar acomodações:', err);
+      setError('Erro ao carregar acomodações.');
+    }
+  };
+  loadAccommodations();
+}, []);
+
 
   const handleSave = async (formData) => {
     setLoading(true);

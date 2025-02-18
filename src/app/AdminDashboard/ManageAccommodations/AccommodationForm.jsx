@@ -1,6 +1,5 @@
 // src/components/AccommodationForm.jsx
 import React, { useState, useEffect } from 'react';
-import CustomDragAndDrop from 'components/DragAndDrop/CustomDragAndDrop';
 import { uploadFile, deleteFile } from 'services/firebaseStorageService';
 import ReactQuill from 'react-quill';
 import Form from 'react-bootstrap/Form';
