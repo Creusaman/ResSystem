@@ -5,7 +5,13 @@ import { uploadFile, deleteFile } from 'services/firebaseStorageService';
 import ReactQuill from 'react-quill';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import { FaWifi, FaTv, FaUtensils, FaSwimmingPool, FaBed, FaShower, FaFire, FaKey, FaSpa, FaFan, FaPlus } from 'react-icons/fa';
+import { FaWifi, FaHotTub, FaTv, FaUtensils, FaSwimmingPool, FaBed, FaShower, FaKey, FaSpa, FaFan, FaBath  } from 'react-icons/fa';
+import { LuAirVent } from "react-icons/lu";
+import { GiCctvCamera, GiBarbecue  } from "react-icons/gi";
+import { PiBathtub, PiFan } from "react-icons/pi";
+import { SlEnergy } from "react-icons/sl";
+import { TbCoffee } from "react-icons/tb";
+import { FaKitchenSet } from "react-icons/fa6";
 import 'react-quill/dist/quill.snow.css';
 import './AccommodationForm.css';
 import MediaDropZone from 'components/MediaDropZone/MediaDropZone';
@@ -13,17 +19,18 @@ import MediaDropZone from 'components/MediaDropZone/MediaDropZone';
 const amenitiesList = [
   { id: 'Wi-Fi', label: 'Wi-Fi', icon: <FaWifi /> },
   { id: 'TV', label: 'TV', icon: <FaTv /> },
-  { id: 'Café da Manhã', label: 'Café da Manhã', icon: <FaUtensils /> },
+  { id: 'Café da Manhã', label: 'Café da Manhã', icon: <TbCoffee /> },
   { id: 'Piscina com Cascata', label: 'Piscina com Cascata', icon: <FaSwimmingPool /> },
   { id: 'Cama King Size', label: 'Cama King Size', icon: <FaBed /> },
   { id: 'Chuveiro Quente', label: 'Chuveiro Quente', icon: <FaShower /> },
-  { id: 'Tomadas', label: 'Tomadas', icon: <FaKey /> },
-  { id: 'Segurança', label: 'Segurança', icon: <FaFire /> },
-  { id: 'Ventilador de Teto', label: 'Ventilador de Teto', icon: <FaFan /> },
-  { id: 'Banheira de Hidromassagem', label: 'Banheira de Hidromassagem', icon: <FaSpa /> },
+  { id: 'Tomadas', label: 'Tomadas', icon: <SlEnergy /> },
+  { id: 'Segurança', label: 'Segurança', icon: <GiCctvCamera /> },
+  { id: 'Ventilador de Teto', label: 'Ventilador de Teto', icon: <PiFan /> },
+  { id: 'Ar Condicionado', label: 'Ar Condicionado', icon: <LuAirVent  /> },
+  { id: 'Hidromassagem', label: 'Hidromassagem', icon: <PiBathtub  /> },
   { id: 'Cozinha Comunitária', label: 'Cozinha Comunitária', icon: <FaUtensils /> },
-  { id: 'Churrasqueira', label: 'Churrasqueira', icon: <FaFire /> },
-  { id: 'Spa', label: 'Spa', icon: <FaSpa /> },
+  { id: 'Churrasqueira', label: 'Churrasqueira', icon: <GiBarbecue  /> },
+  { id: 'Spa', label: 'Spa', icon: <FaHotTub /> },
 ];
 
 
@@ -106,11 +113,6 @@ function AccommodationForm({ initialData, onSave, onCancel }) {
         <Form.Label htmlFor="accommodationName">Nome da Acomodação</Form.Label>
       </Form.Group>
 
-      {/* Descrição com Floating Label */}
-      <Form.Group className="form-floating mb-3">
-        <ReactQuill value={description} onChange={setDescription} />
-      </Form.Group>
-
       {/* Campos na mesma linha */}
       <div className="form-row">
         <Form.Group className="form-floating flex-grow-1">
@@ -150,8 +152,12 @@ function AccommodationForm({ initialData, onSave, onCancel }) {
         </Form.Group>
       </div>
 
+      {/* Descrição com Floating Label */}
+      <Form.Group className="form-floating mb-3">
+        <ReactQuill value={description} onChange={setDescription} />
+      </Form.Group>
 
-      <div className="min-h-screen bg-gray-100 p-8">
+      <div className="bg-gray-100 p-8">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-2xl font-bold mb-6">Media Upload</h1>
         <MediaDropZone 
@@ -159,7 +165,27 @@ function AccommodationForm({ initialData, onSave, onCancel }) {
           onItemsChange={setItems}
         />
       </div>
+      {/* Botões de Alternância para Comodidades */}
     </div>
+    <label>Comodidades:</label>
+      <div className="utilities-container">
+        {amenitiesList.map((amenity) => (
+          <div key={amenity.id} className="utility-toggle">
+            <input
+              type="checkbox"
+              className="btn-check"
+              id={amenity.id}
+              autoComplete="off"
+              checked={utilities.includes(amenity.id)}
+              onChange={() => handleUtilityToggle(amenity.id)}
+            />
+            <label className="utility-btn" htmlFor={amenity.id}>
+              <span className="fs-2">{amenity.icon}</span>
+              <span className="mt-2">{amenity.label}</span>
+            </label>
+          </div>
+        ))}
+      </div>
 
       <div className="button-group">
         <Button onClick={handleSave}>{isEditing ? 'Salvar Alterações' : 'Criar Acomodação'}</Button>

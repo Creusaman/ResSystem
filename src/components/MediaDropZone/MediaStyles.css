@@ -213,4 +213,56 @@
     width: 100%;
     height: auto;
   }
-  
+
+  /* Estilos do botão de excluir */
+.media-delete-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 1.5rem; /* Tamanho do botão */
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.9); /* Fundo branco com transparência */
+    border-radius: 9999px; /* Formato arredondado */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra leve */
+    transition: background-color 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    opacity: 0; /* Oculto por padrão */
+}
+
+/* Exibir o botão ao passar o mouse sobre a mídia */
+.group:hover .media-delete-btn {
+    opacity: 1; /* Tornar visível */
+}
+
+/* Alterar cor do botão ao passar o mouse */
+.media-delete-btn:hover {
+    background-color: #ef4444; /* Vermelho */
+}
+
+.media-delete-btn:hover svg {
+    color: white; /* Ícone branco quando hover */
+}
+
+/* Ajustes para imagens e vídeos */
+.media-item {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+    border-radius: 8px;
+    cursor: grab;
+}
+
+.media-item:active {
+    cursor: grabbing;
+}
+
+.media-item img,
+.media-item video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

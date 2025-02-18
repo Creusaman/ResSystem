@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { X } from 'lucide-react';
+import { FaTrash } from 'react-icons/fa';
 import "./MediaStyles.css";
 
 export default function MediaItem({ item, onRemove, isDragging }) {
@@ -34,32 +34,35 @@ export default function MediaItem({ item, onRemove, isDragging }) {
       {...listeners}
       className="relative aspect-4-3 bg-gray-100 rounded-lg overflow-hidden group cursor-grab active:cursor-grabbing"
     >
-       <div className="aspect-[4/3] w-full h-auto">
-    {item.type === 'image' ? (
-      <img
-        src={item.id}
-        alt="Media preview"
-        className="w-full h-full object-cover"
-        draggable={false}
-      />
-    ) : (
-      <video
-        src={item.id}
-        className="w-full h-full object-cover"
-        controls
-        draggable={false}
-      />
-    )}
-  </div>
-      
+      {/* Thumbnail da Imagem ou Vídeo */}
+      <div className="aspect-[4/3] w-full h-auto">
+        {item.type === 'image' ? (
+          <img
+            src={item.id}
+            alt="Media preview"
+            className="w-full h-full object-cover"
+            draggable={false}
+          />
+        ) : (
+          <video
+            src={item.id}
+            className="w-full h-full object-cover"
+            controls
+            draggable={false}
+          />
+        )}
+      </div>
+
+      {/* Botão de Excluir - Agora aparece apenas quando o mouse está sobre a thumbnail */}
       <button
         onClick={(e) => {
-          e.stopPropagation();
+          e.stopPropagation(); // Evita que o clique no botão inicie o drag
           onRemove();
         }}
-        className="absolute top-1.5 right-1.5 w-6 h-6 flex items-center justify-center bg-white/90 hover:bg-white rounded-full shadow-md opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
+        onPointerDownCapture={(e) => e.stopPropagation()} // Impede que o clique seja detectado como um evento de drag
+        className="media-delete-btn"
       >
-        <X className="w-3.5 h-3.5 text-red-500" />
+        <FaTrash className="w-4 h-4 text-red-500 hover:text-white" />
       </button>
     </div>
   );

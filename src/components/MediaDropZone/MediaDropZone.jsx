@@ -5,6 +5,8 @@ import { Upload } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import MediaItem from './MediaItem';
 import "./MediaStyles.css";
+import { snapCenterToCursor } from '@dnd-kit/modifiers';
+
 
 export default function MediaDropZone({ items, onItemsChange }) {
   const [activeId, setActiveId] = useState(null);
@@ -62,7 +64,7 @@ export default function MediaDropZone({ items, onItemsChange }) {
     onItemsChange(items.filter(item => item.id !== id));
   };
 
-  const dropZoneClasses = "relative border-2 border-dashed border-gray-300 rounded-lg w-full min-h-[240px] transition-all duration-300";
+  const dropZoneClasses = "relative border-2 border-dashed border-gray-300 rounded-lg w-full min-h-[240px] transition-all duration-300 media-upload-container";
   const gridClasses = "grid gap-4 p-4 mt-16 grid-cols-2 md:grid-cols-3 lg:grid-cols-4";
 
   const activeItem = activeId ? items.find(item => item.id === activeId) : null;
@@ -84,7 +86,7 @@ export default function MediaDropZone({ items, onItemsChange }) {
         </button>
       </div>
 
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd} onDragCancel={handleDragCancel}>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd} onDragCancel={handleDragCancel} modifiers={[snapCenterToCursor]}>
         <SortableContext items={items.map(item => item.id)} strategy={rectSortingStrategy}>
           <div className={gridClasses}>
             {items.map((item) => (
@@ -93,17 +95,16 @@ export default function MediaDropZone({ items, onItemsChange }) {
           </div>
         </SortableContext>
         <DragOverlay adjustScale={false} dropAnimation={null}>
-  {activeItem && (
-    <div className="w-[160px] h-[120px] bg-white shadow-xl rounded-lg overflow-hidden">
-      {activeItem.type === 'image' ? (
-        <img src={activeItem.id} alt="Dragging preview" className="w-full h-full object-cover" draggable={false} />
-      ) : (
-        <video src={activeItem.id} className="w-full h-full object-cover" draggable={false} />
-      )}
-    </div>
-  )}
-</DragOverlay>
-
+          {activeItem && (
+            <div className="relative aspect-[4/3] w-40 bg-white shadow-xl rounded-lg overflow-hidden">
+              {activeItem.type === 'image' ? (
+                <img src={activeItem.id} alt="Dragging preview" className="w-full h-full object-cover" draggable={false} />
+              ) : (
+                <video src={activeItem.id} className="w-full h-full object-cover" draggable={false} />
+              )}
+            </div>
+          )}
+        </DragOverlay>
       </DndContext>
 
       {items.length === 0 && (

@@ -57,10 +57,11 @@
 
 /* Estilização dos Utilitários */
 .utilities-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+    justify-content: center;
 }
 
 .utility-checkbox {
@@ -74,6 +75,35 @@
 .utility-checkbox input {
   cursor: pointer;
 }
+
+/* Botão de utilitários padrão */
+.utility-btn {
+  background-color: transparent;
+  border: 2px solid #6c757d; /* Cinza padrão */
+  color: #6c757d;
+  transition: all 0.3s ease-in-out;
+  padding: 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+/* Hover: muda para cinza claro */
+.utility-btn:hover {
+  background-color: #7cbafd; /* azul claro */
+  border-color: #6c757d;
+}
+
+/* Quando o botão estiver selecionado */
+.btn-check:checked + .utility-btn {
+  background-color: white !important; /* Fundo branco */
+  border-color: #007bff !important; /* Borda azul */
+  color: #007bff !important; /* Texto azul */
+  font-weight: bold;
+}
+
 
 /* Botões */
 .button-group {
@@ -165,3 +195,17 @@
   background: #007bff;
   color: white;
 }
+
+/* Ajustando o layout para evitar sobreposição */
+.media-upload-container {
+  margin-bottom: 30px; /* Garante que o espaço entre drag and drop e comodidades fique adequado */
+}
+
+/* Ajustando o alinhamento dos botões */
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
