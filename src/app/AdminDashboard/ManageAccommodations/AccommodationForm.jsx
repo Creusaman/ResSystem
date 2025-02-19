@@ -33,7 +33,7 @@ const amenitiesList = [
 ];
 
 
-function AccommodationForm({ initialData, onSave, onCancel }) {
+function AccommodationForm({ initialData, onSave, onCancel, setHasUnsavedChanges }) {
   const isEditing = Boolean(initialData);
 
   // Estados dos campos do formulário
@@ -56,7 +56,6 @@ function AccommodationForm({ initialData, onSave, onCancel }) {
     try {
       const uploadedFiles = [];
 
-      // Enviar novos arquivos ao Firebase
       for (const file of files) {
         if (!file.url) {
           const uploadedFile = await uploadFile(file, 'accommodations');
@@ -66,7 +65,6 @@ function AccommodationForm({ initialData, onSave, onCancel }) {
         }
       }
 
-      // Remover arquivos deletados do Firebase
       for (const file of removedFiles) {
         await deleteFile(file.path);
       }
@@ -77,11 +75,17 @@ function AccommodationForm({ initialData, onSave, onCancel }) {
         baseOccupancy,
         maxOccupancy,
         unitsAvailable,
-        utilities,
         files: uploadedFiles,
       });
 
+      setName('');
+      setDescription('');
+      setBaseOccupancy(1);
+      setMaxOccupancy(1);
+      setUnitsAvailable(0);
+      setFiles([]);
       setRemovedFiles([]);
+      setHasUnsavedChanges(false);
     } catch (error) {
       console.error('Erro ao salvar acomodação:', error);
     }
