@@ -1,78 +1,82 @@
-import React, { useState } from 'react';
-import { DndContext, closestCenter, DragOverlay, useSensor, useSensors, PointerSensor, TouchSensor } from '@dnd-kit/core';
+import React, { useState, useEffect } from 'react';
+import { DndContext, closestCenter, useSensor, useSensors, PointerSensor, TouchSensor } from '@dnd-kit/core';
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
 import { Upload } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import MediaItem from './MediaItem';
 import "./MediaStyles.css";
-import { snapCenterToCursor } from '@dnd-kit/modifiers';
-
+import { v4 as uuidv4 } from 'uuid';
+import { useAccommodations } from 'app/AdminDashboard/ManageAccommodations/AccommodationContext';
 
 export default function MediaDropZone({ items, onItemsChange }) {
-  const [activeId, setActiveId] = useState(null);
+  const { isEditing } = useAccommodations();
+  const [localItems, setLocalItems] = useState([]);
 
+  // ✅ Sincroniza `localItems` com `isEditing.files` ao mudar a acomodação em edição
+  useEffect(() => {
+    if (isEditing) {
+      setLocalItems(isEditing.files || []);
+    } else {
+      setLocalItems([]);
+    }
+  }, [isEditing]);
+
+  // ✅ Atualiza o estado local quando `items` muda
+  useEffect(() => {
+    setLocalItems(items);
+  }, [items]);
+
+  // ✅ Configuração de sensores para arrastar imagens
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { delay: 0, tolerance: 0 },
-    }),
-    useSensor(TouchSensor, {
-      activationConstraint: { delay: 250, tolerance: 5 },
-    })
+    useSensor(PointerSensor, { activationConstraint: { delay: 0, tolerance: 0 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } })
   );
 
+  // ✅ Configuração do Dropzone para adicionar novos arquivos localmente
   const { getRootProps, getInputProps } = useDropzone({
     accept: { 'image/*': [], 'video/*': [] },
     onDrop: (acceptedFiles) => {
-      const newFiles = acceptedFiles.map((file) => ({
-        id: URL.createObjectURL(file),
+      const newFiles = acceptedFiles.map(file => ({
+        id: uuidv4(),
         file,
-        type: file.type.startsWith('image') ? 'image' : 'video',
+        type: file.type || "image/jpeg",
+        url: URL.createObjectURL(file), // ✅ Cria um preview temporário
+        isNew: true, // ✅ Marca como novo para ser enviado apenas ao salvar
       }));
-      onItemsChange([...items, ...newFiles]);
+
+      setLocalItems(prev => [...prev, ...newFiles]);
+      onItemsChange([...localItems, ...newFiles]);
     },
   });
 
-  const handleDragStart = (event) => {
-    setActiveId(event.active.id);
-    document.body.style.cursor = 'grabbing';
-  };
-
+  // ✅ Manipula a reordenação das imagens sem ativar upload imediato
   const handleDragEnd = (event) => {
     const { active, over } = event;
-    document.body.style.cursor = '';
-    
-    if (active.id !== over?.id) {
-      const oldIndex = items.findIndex((item) => item.id === active.id);
-      const newIndex = items.findIndex((item) => item.id === over.id);
-      
-      const newItems = [...items];
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = localItems.findIndex((item) => item.id === active.id);
+    const newIndex = localItems.findIndex((item) => item.id === over.id);
+
+    if (oldIndex !== -1 && newIndex !== -1) {
+      const newItems = [...localItems];
       const [removed] = newItems.splice(oldIndex, 1);
       newItems.splice(newIndex, 0, removed);
-      
+      setLocalItems(newItems);
       onItemsChange(newItems);
     }
-    
-    setActiveId(null);
   };
 
-  const handleDragCancel = () => {
-    setActiveId(null);
-    document.body.style.cursor = '';
+  // ✅ Remove um arquivo da lista local sem deletar do Firebase ainda
+  const handleRemove = (id) => {
+    const updatedItems = localItems.filter(item => item.id !== id);
+    setLocalItems(updatedItems);
+    onItemsChange(updatedItems);
   };
-
-  const removeItem = (id) => {
-    onItemsChange(items.filter(item => item.id !== id));
-  };
-
-  const dropZoneClasses = "relative border-2 border-dashed border-gray-300 rounded-lg w-full min-h-[240px] transition-all duration-300 media-upload-container";
-  const gridClasses = "grid gap-4 p-4 mt-16 grid-cols-2 md:grid-cols-3 lg:grid-cols-4";
-
-  const activeItem = activeId ? items.find(item => item.id === activeId) : null;
 
   return (
-    <div className={dropZoneClasses} {...getRootProps()}>
+    <div className="relative border-2 border-dashed border-gray-300 rounded-lg w-full min-h-[240px] transition-all duration-300 media-upload-container" {...getRootProps()}>
       <input {...getInputProps()} />
-      
+
       <div className="absolute top-4 left-4 z-10">
         <button
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -82,34 +86,23 @@ export default function MediaDropZone({ items, onItemsChange }) {
           }}
         >
           <Upload size={20} />
-          <span>Add Media</span>
+          <span>Adicionar Mídia</span>
         </button>
       </div>
 
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd} onDragCancel={handleDragCancel} modifiers={[snapCenterToCursor]}>
-        <SortableContext items={items.map(item => item.id)} strategy={rectSortingStrategy}>
-          <div className={gridClasses}>
-            {items.map((item) => (
-              <MediaItem key={item.id} item={item} onRemove={() => removeItem(item.id)} isDragging={item.id === activeId} />
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={localItems.map(item => item.id)} strategy={rectSortingStrategy}>
+          <div className="grid gap-4 p-4 mt-16 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {localItems.map((item) => (
+              <MediaItem key={item.id} item={item} onRemove={() => handleRemove(item.id)} />
             ))}
           </div>
         </SortableContext>
-        <DragOverlay adjustScale={false} dropAnimation={null}>
-          {activeItem && (
-            <div className="relative aspect-[4/3] w-40 bg-white shadow-xl rounded-lg overflow-hidden">
-              {activeItem.type === 'image' ? (
-                <img src={activeItem.id} alt="Dragging preview" className="w-full h-full object-cover" draggable={false} />
-              ) : (
-                <video src={activeItem.id} className="w-full h-full object-cover" draggable={false} />
-              )}
-            </div>
-          )}
-        </DragOverlay>
       </DndContext>
 
-      {items.length === 0 && (
+      {localItems.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center text-gray-400">
-          <p>Drag and drop media files here, or click to select files</p>
+          <p>Arraste e solte arquivos de mídia aqui ou clique para selecionar.</p>
         </div>
       )}
     </div>

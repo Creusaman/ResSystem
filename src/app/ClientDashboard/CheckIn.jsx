@@ -20,7 +20,7 @@ function CheckIn() {
     handleDragLeave,
     handleDrop,
     handleReorder,
-    deleteFile,
+    deleteFiles,
     generateThumbnail,
   } = useDragAndDrop(`checkin/${reservationId}`);
 
@@ -107,7 +107,7 @@ function CheckIn() {
           {orderedFiles.map((file, index) => (
             <div key={index} className="file-item">
               <img src={generateThumbnail(file.url)} alt="preview" className="thumbnail" />
-              <button onClick={() => deleteFile(file.url)}>Excluir</button>
+              <button onClick={() => deleteFiles(file.url)}>Excluir</button>
             </div>
           ))}
         </div>

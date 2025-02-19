@@ -9,7 +9,7 @@ import {
   addFilesToAccommodation,
   removeFileFromAccommodation
 } from '../services/firestoreService';
-import { uploadFile, deleteFile } from '../services/firebaseStorageService';
+import { uploadFiles, deleteFiles } from '../services/firebaseStorageService';
 import { useAuth } from './AuthProvider';
 
 export const AdminContext = createContext();
@@ -44,7 +44,7 @@ export const AdminContextProvider = ({ children }) => {
         fetchAllReservations: () => executeAdminAction(fetchAllReservations),
         addAccommodation: async (data, folder, files) => {
           return executeAdminAction(async () => {
-            const uploadedFiles = files && files.length ? await uploadFile(files, folder, verifyAdmin) : [];
+            const uploadedFiles = files && files.length ? await uploadFiles(files, folder, verifyAdmin) : [];
             const accommodationData = { ...data, files: uploadedFiles || [] };
             const addedAccommodation = await addAccommodationService(accommodationData, verifyAdmin);
             if (uploadedFiles.length) {
@@ -55,7 +55,7 @@ export const AdminContextProvider = ({ children }) => {
         },
         updateAccommodation: async (id, data, folder, files) => {
           return executeAdminAction(async () => {
-            const uploadedFiles = files && files.length ? await uploadFile(files, folder, verifyAdmin) : [];
+            const uploadedFiles = files && files.length ? await uploadFiles(files, folder, verifyAdmin) : [];
             const updatedData = { ...data, files: uploadedFiles || [] };
             const updatedAccommodation = await updateAccommodationService(id, updatedData, verifyAdmin);
             if (uploadedFiles.length) {
@@ -67,7 +67,7 @@ export const AdminContextProvider = ({ children }) => {
         deleteAccommodation: async (id, files) => {
           return executeAdminAction(async () => {
             if (files && files.length) {
-              await Promise.all(files.map(file => deleteFile(file.path, verifyAdmin)));
+              await Promise.all(files.map(file => deleteFiles(file.path, verifyAdmin)));
             }
             return await deleteAccommodationService(id, verifyAdmin);
           });

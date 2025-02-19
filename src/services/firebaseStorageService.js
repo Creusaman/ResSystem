@@ -6,36 +6,27 @@ const storage = getStorage();
 const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'video/mp4'];
 const maxFileSize = 10 * 1024 * 1024; // 10MB
 
-export const uploadFile = async (file, folder, verifyAdmin, onProgress) => {
+export const uploadFiles = async (file, accommodationName, accommodationId, verifyAdmin) => {
   try {
     await verifyAdmin();
     
     if (!allowedTypes.includes(file.type)) {
       throw new Error(`Tipo de arquivo não permitido: ${file.type}`);
     }
-    if (file.size > maxFileSize) {
-      throw new Error(`Arquivo muito grande: ${file.name}`);
-    }
     
     const timestamp = new Date().getTime();
-    const fileRef = ref(storage, `${folder}/${timestamp}_${file.name}`);
+    const folderPath = `accommodations/${accommodationName}_${accommodationId}`;
+    const fileRef = ref(storage, `${folderPath}/${timestamp}_${file.name}`);
     const uploadTask = uploadBytesResumable(fileRef, file);
 
     return new Promise((resolve, reject) => {
       uploadTask.on(
         'state_changed',
-        (snapshot) => {
-          if (onProgress) {
-            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            onProgress(progress);
-          }
-        },
+        null,
         (error) => reject(error),
         async () => {
           const url = await getDownloadURL(fileRef);
-          const fileData = { name: file.name, url, path: fileRef.fullPath };
-          await saveFileMetadataToFirestore(folder, fileData);
-          resolve(fileData);
+          resolve({ id: timestamp, url, path: fileRef.fullPath });
         }
       );
     });
@@ -44,6 +35,7 @@ export const uploadFile = async (file, folder, verifyAdmin, onProgress) => {
     throw error;
   }
 };
+
 
 export const saveFileMetadataToFirestore = async (folder, fileData) => {
   try {
@@ -54,19 +46,19 @@ export const saveFileMetadataToFirestore = async (folder, fileData) => {
   }
 };
 
-export const deleteFile = async (filePath, verifyAdmin) => {
+export const deleteFiles = async (filePath, verifyAdmin) => {
   try {
     await verifyAdmin();
     const fileRef = ref(storage, filePath);
     await deleteObject(fileRef);
-    await deleteFileMetadataFromFirestore(filePath);
+    await deleteFilesMetadataFromFirestore(filePath);
   } catch (error) {
     console.error('Erro ao deletar arquivo:', error);
     throw error;
   }
 };
 
-export const deleteFileMetadataFromFirestore = async (filePath) => {
+export const deleteFilesMetadataFromFirestore = async (filePath) => {
   try {
     const q = query(collection(db, 'arquivos'), where('path', '==', filePath));
     const querySnapshot = await getDocs(q);

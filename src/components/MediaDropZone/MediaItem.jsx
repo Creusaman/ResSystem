@@ -4,7 +4,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { FaTrash } from 'react-icons/fa';
 import "./MediaStyles.css";
 
-export default function MediaItem({ item, onRemove, isDragging }) {
+export default function MediaItem({ item, onRemove }) {
   const {
     attributes,
     listeners,
@@ -22,7 +22,6 @@ export default function MediaItem({ item, onRemove, isDragging }) {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0 : 1,
     touchAction: 'none',
   };
 
@@ -32,38 +31,39 @@ export default function MediaItem({ item, onRemove, isDragging }) {
       style={style}
       {...attributes}
       {...listeners}
-      className="relative aspect-4-3 bg-gray-100 rounded-lg overflow-hidden group cursor-grab active:cursor-grabbing"
+      className="relative aspect-[4/3] bg-gray-100 rounded-lg overflow-hidden group cursor-grab active:cursor-grabbing"
     >
       {/* Thumbnail da Imagem ou Vídeo */}
-      <div className="aspect-[4/3] w-full h-auto">
-        {item.type === 'image' ? (
+      <div className="w-full h-full">
+        {item.type.startsWith('image') ? (
           <img
-            src={item.id}
+            src={item.url}  // ✅ Agora exibe corretamente a imagem
             alt="Media preview"
             className="w-full h-full object-cover"
             draggable={false}
           />
         ) : (
           <video
-            src={item.id}
+            src={item.url}  // ✅ Agora exibe corretamente o vídeo
             className="w-full h-full object-cover"
-            controls
+            muted
             draggable={false}
           />
         )}
       </div>
 
-      {/* Botão de Excluir - Agora aparece apenas quando o mouse está sobre a thumbnail */}
-      <button
+       {/* Botão de Excluir - Agora aparece apenas quando o mouse está sobre a thumbnail */}
+       <button
         onClick={(e) => {
           e.stopPropagation(); // Evita que o clique no botão inicie o drag
-          onRemove();
+          onRemove(item.id);
         }}
         onPointerDownCapture={(e) => e.stopPropagation()} // Impede que o clique seja detectado como um evento de drag
         className="media-delete-btn"
       >
         <FaTrash className="w-4 h-4 text-red-500 hover:text-white" />
       </button>
+
     </div>
   );
 }

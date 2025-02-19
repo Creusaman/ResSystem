@@ -7,6 +7,8 @@ import AdminContextProvider from './Context/AdminContextProvider';
 import CartContextProvider from './Context/CartContextProvider';
 import SharedContextProvider from './Context/SharedContextProvider';
 import { RulesProvider } from './app/AdminDashboard/RulesManager/RulesContext'; // 🔹 Importação correta do RulesProvider
+import { AccommodationProvider } from 'app/AdminDashboard/ManageAccommodations/AccommodationContext';
+import { FileUploadProvider } from 'app/AdminDashboard/ManageAccommodations/FileUploadContext';
 
 const rootElement = document.getElementById('root');
 const root = ReactDOM.createRoot(rootElement);
@@ -17,11 +19,15 @@ root.render(
       <SharedContextProvider>
         <CartContextProvider>
           <AdminContextProvider>
-            <ClientContextProvider>
-              <RulesProvider> {/* 🔹 Agora RulesContext está disponível globalmente */}
-                <App />
-              </RulesProvider>
-            </ClientContextProvider>
+            <AccommodationProvider>
+              <FileUploadProvider>
+              <ClientContextProvider>
+                <RulesProvider> {/* 🔹 Agora RulesContext está disponível globalmente */}
+                  <App />
+                </RulesProvider>
+              </ClientContextProvider>
+              </FileUploadProvider>
+            </AccommodationProvider>
           </AdminContextProvider>
         </CartContextProvider>
       </SharedContextProvider>
