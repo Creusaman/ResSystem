@@ -25,7 +25,7 @@ export const fetchAllAccommodations = async () => {
 export const addAccommodation = async (data, verifyAdmin) => {
   await verifyAdmin();
   const docRef = await addDoc(collection(db, 'Acomodacoes'), data);
-  return { id: docRef.id, ...data };
+  return { id: docRef.id, ...data }; // Garantir retorno do ID
 };
 
 export const updateAccommodation = async (id, data, verifyAdmin) => {

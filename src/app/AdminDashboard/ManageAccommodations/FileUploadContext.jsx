@@ -10,13 +10,14 @@ export const FileUploadProvider = ({ children }) => {
 
   const handleUpload = async (file, accommodationName, accommodationId) => {
     try {
-      if (!verifyAdmin) throw new Error("Erro: verifyAdmin não está definido.");
+      if (!verifyAdmin) throw new Error("Erro: Permissões não verificadas");
       
       const uploadedFile = await uploadFiles(file, accommodationName, accommodationId, verifyAdmin);
       setFiles((prev) => [...prev, uploadedFile]);
       return uploadedFile;
     } catch (error) {
-      console.error("Erro ao fazer upload do arquivo:", error);
+      console.error("Erro no upload:", error);
+      throw error; // Propagação correta do erro
     }
   };
 

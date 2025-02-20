@@ -110,20 +110,39 @@ const handleRemoveFile = (id) => {
     const existingFiles = isEditing?.files || [];
     const newFiles = mediaFiles.filter(file => !existingFiles.some(f => f.id === file.id));
     const deletedFiles = existingFiles.filter(file => !mediaFiles.some(f => f.id === file.id));
-
+  
     try {
+      // 1. Gerar accommodationId ANTES do upload
+      const accommodationId = isEditing ? isEditing.id : uuidv4();
+  
+      // 2. Processar exclusões
       await Promise.all(deletedFiles.map(async (file) => {
         if (file.path) await handleDelete(file.path);
       }));
-
+  
+      // 3. Upload de arquivos com ID correto
       const uploadedFiles = await Promise.all(newFiles.map(async (file) => {
         if (!file.file) return file;
-        const uploadedFile = await handleUpload(file.file, formData.name, isEditing?.id);
-        return { id: uploadedFile.id, url: uploadedFile.url };
+        const uploadedFile = await handleUpload(
+          file.file, 
+          formData.name, 
+          accommodationId // Usar ID gerado
+        );
+        return {
+          id: uploadedFile.id,
+          url: uploadedFile.url,
+          path: uploadedFile.path
+        };
       }));
-
+  
+      // 4. Atualizar dados com ID da acomodação
       const updatedFiles = [...mediaFiles.filter(file => !file.isNew), ...uploadedFiles];
-      await saveAccommodation({ ...formData, files: updatedFiles });
+      await saveAccommodation({
+        ...formData,
+        files: updatedFiles,
+        id: accommodationId // Incluir ID gerado
+      });
+  
     } catch (error) {
       console.error("Erro ao salvar arquivos:", error);
     }
@@ -192,7 +211,7 @@ const handleRemoveFile = (id) => {
       {/* Upload de arquivos */}
       <div className="bg-gray-100 p-8">
         <h3 className="text-2xl font-bold mb-4">Media Upload</h3>
-        <MediaDropZone items={formData.files} onItemsChange={handleFileUpload} />
+        <MediaDropZone items={mediaFiles} onItemsChange={handleFileUpload} />
       </div>
 
       {/* Comodidades */}
