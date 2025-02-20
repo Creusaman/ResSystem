@@ -16,7 +16,6 @@ import { SlEnergy } from "react-icons/sl";
 import { TbCoffee } from "react-icons/tb";
 import { FaKitchenSet } from "react-icons/fa6";
 import "./AccommodationForm.css";
-import { v4 as uuidv4 } from 'uuid';
 
 const amenitiesList = [
   { id: "Wi-Fi", label: "Wi-Fi", icon: <FaWifi /> },
@@ -89,12 +88,11 @@ function AccommodationForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Gera um ID para a acomodação se for nova
-      const accommodationId = isEditing ? isEditing.id : uuidv4();
-      // Processa os arquivos de mídia chamando saveMedia do MediaUploader
+      // Obtém a lista final de mídias através do MediaUploader
       const finalFiles = await mediaUploaderRef.current.saveMedia();
-      // Atualiza os dados com a lista final de arquivos
-      const updatedData = { ...formData, files: finalFiles, id: accommodationId };
+      // Removemos o campo "id" se existir – para novos documentos, não enviamos o campo "id"
+      const { id, ...dataWithoutId } = formData;
+      const updatedData = { ...dataWithoutId, files: finalFiles };
       await saveAccommodation(updatedData);
     } catch (error) {
       console.error("Erro ao salvar acomodação:", error);
@@ -155,17 +153,20 @@ function AccommodationForm() {
       </div>
 
       <Form.Group className="form-floating mb-3">
-        <ReactQuill value={formData.description} onChange={(value) => setFormData({ ...formData, description: value })} />
+        <ReactQuill
+          value={formData.description}
+          onChange={(value) => setFormData({ ...formData, description: value })}
+        />
       </Form.Group>
 
-      {/* Nova área de upload de mídia utilizando o MediaUploader */}
+      {/* Área de upload de mídia utilizando o MediaUploader */}
       <div className="bg-gray-100 p-4">
         <h3 className="text-2xl font-bold mb-4">Media Upload</h3>
         <MediaUploader
           ref={mediaUploaderRef}
           initialFiles={mediaFiles}
           accommodationName={formData.name}
-          accommodationId={isEditing ? isEditing.id : formData.name}  
+          accommodationId={isEditing ? isEditing.id : formData.name}
         />
       </div>
 
@@ -192,7 +193,15 @@ function AccommodationForm() {
       <div className="button-group mt-4">
         <Button type="submit">{isEditing ? "Salvar Alterações" : "Criar Acomodação"}</Button>
         <Button variant="secondary" className="ms-2" onClick={() => {
-          setFormData({ name: "", description: "", baseOccupancy: 1, maxOccupancy: 1, unitsAvailable: 0, files: [], amenities: [] });
+          setFormData({
+            name: "",
+            description: "",
+            baseOccupancy: 1,
+            maxOccupancy: 1,
+            unitsAvailable: 0,
+            files: [],
+            amenities: [],
+          });
           setMediaFiles([]);
         }}>
           {isEditing ? "Cancelar Alterações" : "Limpar Campos"}

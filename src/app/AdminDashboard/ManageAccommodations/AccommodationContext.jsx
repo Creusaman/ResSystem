@@ -1,5 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { fetchAllAccommodations, addAccommodation, updateAccommodation, deleteAccommodation } from "services/firestoreService";
+import {
+  fetchAllAccommodations,
+  addAccommodation,
+  updateAccommodation,
+  deleteAccommodation
+} from "services/firestoreService";
 import { useAuth } from "Context/AuthProvider";
 
 const AccommodationContext = createContext();
@@ -7,7 +12,7 @@ const AccommodationContext = createContext();
 export const AccommodationProvider = ({ children }) => {
   const { verifyAdmin } = useAuth();
   const [accommodations, setAccommodations] = useState([]);
-  const [isEditing, setIsEditing] = useState(null); // ✅ Snapshot da acomodação em edição
+  const [isEditing, setIsEditing] = useState(null); // Snapshot da acomodação em edição
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -32,7 +37,7 @@ export const AccommodationProvider = ({ children }) => {
     if (hasUnsavedChanges && !window.confirm("Existem alterações não salvas. Deseja continuar?")) {
       return;
     }
-    setIsEditing(accommodation ? { ...accommodation } : null); // ✅ Salva snapshot
+    setIsEditing(accommodation ? { ...accommodation } : null); // Salva snapshot
     setHasUnsavedChanges(false);
   };
 
@@ -56,13 +61,28 @@ export const AccommodationProvider = ({ children }) => {
     }
   };
 
+  const removeAccommodation = async (id) => {
+    setLoading(true);
+    try {
+      await verifyAdmin();
+      await deleteAccommodation(id, verifyAdmin);
+      setAccommodations(await fetchAllAccommodations());
+    } catch (err) {
+      console.error("Erro ao excluir acomodação:", err);
+      setError("Erro ao excluir acomodação.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <AccommodationContext.Provider
       value={{
         accommodations,
-        isEditing, // ✅ Indica se estamos editando ou criando uma nova acomodação
+        isEditing, // Indica se estamos editando ou criando uma nova acomodação
         selectAccommodation,
         saveAccommodation,
+        removeAccommodation,
         loading,
         error,
         hasUnsavedChanges,

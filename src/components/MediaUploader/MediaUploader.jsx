@@ -118,141 +118,130 @@ const DeleteButton = styled.button`
 
 // Componente SortableItem para cada card
 const SortableItem = ({ id, file, onCaptionChange, onDelete }) => {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
+    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition: transition || 'transform 300ms ease',
+    };
   
-  return (
-    <MediaCard ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      {file.type.startsWith('video') ? (
-        <PreviewVideo controls src={file.url} />
-      ) : (
-        <PreviewImage src={file.url} alt={file.caption || file.name} />
-      )}
-      <DeleteButton className="delete-button" onClick={() => onDelete(file.id)}>
-        <FaTrash />
-      </DeleteButton>
-      <FileInfo>
-        <div><strong>{file.name}</strong></div>
-        <InputField
-          type="text"
-          placeholder="Legenda (opcional)"
-          value={file.caption || ''}
-          onChange={(e) => onCaptionChange(file.id, e.target.value)}
-        />
-      </FileInfo>
-    </MediaCard>
-  );
-};
-
-
-const MediaUploader = forwardRef(({ initialFiles = [], accommodationName, accommodationId }, ref) => {
-  const [files, setFiles] = useState([]);
-  const { verifyAdmin } = useAuth();
-  
-  // Carrega os arquivos existentes no estado local
-  useEffect(() => {
-    const processed = initialFiles.map(file => ({
-      ...file,
-      status: 'existing'
-    }));
-    setFiles(processed);
-  }, [initialFiles]);
-  
-  const onDrop = acceptedFiles => {
-    const newFiles = acceptedFiles.map(file => ({
-      id: `new-${file.name}-${Date.now()}`,
-      file,
-      url: URL.createObjectURL(file),
-      type: file.type,
-      name: file.name,
-      caption: '',
-      status: 'new'
-    }));
-    setFiles(prev => [...prev, ...newFiles]);
-  };
-  
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: 'image/jpeg, image/png, image/webp, video/mp4'
-  });
-  
-  // Reordenação usando dnd kit
-  const handleDragEnd = (event) => {
-    const { active, over } = event;
-    if (active.id !== over.id) {
-      setFiles((items) => {
-        const oldIndex = items.findIndex(item => item.id === active.id);
-        const newIndex = items.findIndex(item => item.id === over.id);
-        return arrayMove(items, oldIndex, newIndex);
-      });
-    }
-  };
-  
-  const handleCaptionChange = (id, caption) => {
-    setFiles(prev => prev.map(f => f.id === id ? { ...f, caption } : f));
-  };
-  
-  const handleDelete = id => {
-    setFiles(prev =>
-      prev
-        .map(f => {
-          if (f.id === id) {
-            return f.status === 'new' ? null : { ...f, status: 'deleted' };
-          }
-          return f;
-        })
-        .filter(Boolean)
+    return (
+      <MediaCard ref={setNodeRef} style={style} {...attributes} {...listeners}>
+        {file?.type?.startsWith('video') ? (
+          <PreviewVideo controls src={file.url} />
+        ) : (
+          <PreviewImage src={file.url} alt={file.caption || file.name} />
+        )}
+        <DeleteButton className="delete-button" onClick={() => onDelete(file.id)}>
+          <FaTrash />
+        </DeleteButton>
+        <FileInfo>
+          <div><strong>{file.name}</strong></div>
+          <InputField
+            type="text"
+            placeholder="Legenda (opcional)"
+            value={file.caption || ''}
+            onChange={(e) => onCaptionChange(file.id, e.target.value)}
+          />
+        </FileInfo>
+      </MediaCard>
     );
   };
   
-  // Processa uploads e exclusões
-  const saveMedia = async () => {
-    const deletionPromises = files
-      .filter(f => f.status === 'deleted' && f.path)
-      .map(async f => {
-        await deleteFiles(f.path, verifyAdmin);
-      });
-    await Promise.all(deletionPromises);
-    
-    const uploadPromises = files
-      .filter(f => f.status === 'new')
-      .map(async (f, index) => {
-        const uploadedFile = await uploadFiles(f.file, accommodationName, accommodationId, verifyAdmin);
-        return {
-          id: uploadedFile.id,
-          url: uploadedFile.url,
-          path: uploadedFile.path,
-          caption: f.caption || f.name,
-          order: index
-        };
-      });
-    const uploadedFiles = await Promise.all(uploadPromises);
-    
-    const existingFiles = files
-      .filter(f => f.status === 'existing')
-      .map((f, index) => ({
-        ...f,
-        order: index,
-        caption: f.caption || f.name
+  const MediaUploader = forwardRef(({ initialFiles = [], accommodationName, accommodationId }, ref) => {
+    const [files, setFiles] = useState([]);
+    const { verifyAdmin } = useAuth();
+  
+    useEffect(() => {
+      const processed = initialFiles.map(file => ({
+        ...file,
+        status: 'existing',
+        type: file.type || "image/jpeg",
       }));
-    
-    const finalFiles = [...existingFiles, ...uploadedFiles];
-    return finalFiles;
-  };
+      setFiles(processed);
+    }, [initialFiles]);
   
-  useImperativeHandle(ref, () => ({
-    saveMedia
-  }));
+    const onDrop = acceptedFiles => {
+      const newFiles = acceptedFiles.map(file => ({
+        id: `new-${file.name}-${Date.now()}`,
+        file,
+        url: URL.createObjectURL(file),
+        type: file.type,
+        name: file.name,
+        caption: '',
+        status: 'new'
+      }));
+      setFiles(prev => [...prev, ...newFiles]);
+    };
   
-  const filteredFiles = files.filter(f => f.status !== 'deleted');
-    // ✅ Configuração de sensores para arrastar imagens
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+      onDrop,
+      accept: 'image/jpeg, image/png, image/webp, video/mp4'
+    });
+  
     const sensors = useSensors(
-        useSensor(PointerSensor, { activationConstraint: { delay: 0, tolerance: 0 } }),
-        useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } })
+      useSensor(PointerSensor, { activationConstraint: { delay: 0, tolerance: 0 } }),
+      useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } })
+    );
+  
+    const handleDragEnd = (event) => {
+      const { active, over } = event;
+      if (over && active.id !== over.id) {
+        setFiles((items) => {
+          const oldIndex = items.findIndex(item => item.id === active.id);
+          const newIndex = items.findIndex(item => item.id === over.id);
+          return arrayMove(items, oldIndex, newIndex);
+        });
+      }
+    };
+  
+    const handleCaptionChange = (id, caption) => {
+      setFiles(prev => prev.map(f => f.id === id ? { ...f, caption } : f));
+    };
+  
+    const handleDelete = id => {
+      setFiles(prev =>
+        prev
+          .map(f => (f.id === id ? (f.status === 'new' ? null : { ...f, status: 'deleted' }) : f))
+          .filter(Boolean)
       );
+    };
+  
+    const saveMedia = async () => {
+      const deletionPromises = files
+        .filter(f => f.status === 'deleted' && f.path)
+        .map(async f => await deleteFiles(f.path, verifyAdmin));
+      await Promise.all(deletionPromises);
+  
+      const uploadPromises = files
+        .filter(f => f.status === 'new')
+        .map(async (f, index) => {
+          const uploadedFile = await uploadFiles(f.file, accommodationName, accommodationId, verifyAdmin);
+          return {
+            id: uploadedFile.id,
+            url: uploadedFile.url,
+            path: uploadedFile.path,
+            caption: f.caption || f.name,
+            order: index
+          };
+        });
+      const uploadedFiles = await Promise.all(uploadPromises);
+  
+      const existingFiles = files
+        .filter(f => f.status === 'existing')
+        .map((f, index) => ({
+          ...f,
+          order: index,
+          caption: f.caption || f.name
+        }));
+  
+      return [...existingFiles, ...uploadedFiles];
+    };
+  
+    useImperativeHandle(ref, () => ({
+      saveMedia
+    }));
+  
+    const filteredFiles = files.filter(f => f.status !== 'deleted');
   
   return (
     <div>
