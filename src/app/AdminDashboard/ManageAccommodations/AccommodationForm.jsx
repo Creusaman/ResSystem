@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+// AccommodationForm.jsx
+import React, { useEffect, useState, useRef } from "react";
 import { useAccommodations } from "./AccommodationContext";
-import { useFileUpload } from "./FileUploadContext";
-import MediaDropZone from "components/MediaDropZone/MediaDropZone";
+import MediaUploader from "components/MediaUploader/MediaUploader";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import ReactQuill from "react-quill";
@@ -16,9 +16,8 @@ import { SlEnergy } from "react-icons/sl";
 import { TbCoffee } from "react-icons/tb";
 import { FaKitchenSet } from "react-icons/fa6";
 import "./AccommodationForm.css";
-import { v4 as uuidv4 } from 'uuid'; // Importando biblioteca para gerar IDs únicos
+import { v4 as uuidv4 } from 'uuid';
 
-// Lista de comodidades disponíveis com ícones
 const amenitiesList = [
   { id: "Wi-Fi", label: "Wi-Fi", icon: <FaWifi /> },
   { id: "TV", label: "TV", icon: <FaTv /> },
@@ -38,7 +37,6 @@ const amenitiesList = [
 
 function AccommodationForm() {
   const { isEditing, saveAccommodation, setHasUnsavedChanges } = useAccommodations();
-  const { handleUpload, handleDelete } = useFileUpload();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -50,11 +48,13 @@ function AccommodationForm() {
     amenities: [],
   });
 
-  // Estado local para manipulação de arquivos antes do upload
+  // Estado para armazenar os arquivos de mídia
   const [mediaFiles, setMediaFiles] = useState([]);
 
-   // ✅ Atualiza o formulário e a mídia sempre que `isEditing` mudar
-   useEffect(() => {
+  // Ref para acessar o método saveMedia do MediaUploader
+  const mediaUploaderRef = useRef();
+
+  useEffect(() => {
     if (isEditing) {
       setFormData({ ...isEditing });
       setMediaFiles(isEditing.files || []);
@@ -77,25 +77,6 @@ function AccommodationForm() {
     setHasUnsavedChanges(true);
   };
 
- // ✅ Armazena os arquivos localmente antes de enviá-los ao Firebase
- const handleFileUpload = (file) => {
-  if (!file) return;
-  const newFile = {
-    id: uuidv4(),
-    file,
-    url: file instanceof File ? URL.createObjectURL(file) : file.url,
-    isNew: true,
-  };
-  setMediaFiles(prev => [...prev, newFile]);
-  setHasUnsavedChanges(true);
-};
-
-// ✅ Remove arquivo apenas da lista local (não do Firebase ainda)
-const handleRemoveFile = (id) => {
-  setMediaFiles(prev => prev.filter(file => file.id !== id));
-  setHasUnsavedChanges(true);
-};
-
   const handleAmenityToggle = (amenityId) => {
     setFormData((prev) => ({
       ...prev,
@@ -107,52 +88,23 @@ const handleRemoveFile = (id) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const existingFiles = isEditing?.files || [];
-    const newFiles = mediaFiles.filter(file => !existingFiles.some(f => f.id === file.id));
-    const deletedFiles = existingFiles.filter(file => !mediaFiles.some(f => f.id === file.id));
-  
     try {
-      // 1. Gerar accommodationId ANTES do upload
+      // Gera um ID para a acomodação se for nova
       const accommodationId = isEditing ? isEditing.id : uuidv4();
-  
-      // 2. Processar exclusões
-      await Promise.all(deletedFiles.map(async (file) => {
-        if (file.path) await handleDelete(file.path);
-      }));
-  
-      // 3. Upload de arquivos com ID correto
-      const uploadedFiles = await Promise.all(newFiles.map(async (file) => {
-        if (!file.file) return file;
-        const uploadedFile = await handleUpload(
-          file.file, 
-          formData.name, 
-          accommodationId // Usar ID gerado
-        );
-        return {
-          id: uploadedFile.id,
-          url: uploadedFile.url,
-          path: uploadedFile.path
-        };
-      }));
-  
-      // 4. Atualizar dados com ID da acomodação
-      const updatedFiles = [...mediaFiles.filter(file => !file.isNew), ...uploadedFiles];
-      await saveAccommodation({
-        ...formData,
-        files: updatedFiles,
-        id: accommodationId // Incluir ID gerado
-      });
-  
+      // Processa os arquivos de mídia chamando saveMedia do MediaUploader
+      const finalFiles = await mediaUploaderRef.current.saveMedia();
+      // Atualiza os dados com a lista final de arquivos
+      const updatedData = { ...formData, files: finalFiles, id: accommodationId };
+      await saveAccommodation(updatedData);
     } catch (error) {
-      console.error("Erro ao salvar arquivos:", error);
+      console.error("Erro ao salvar acomodação:", error);
     }
   };
-  
+
   return (
     <form onSubmit={handleSubmit} className="p-4 bg-white shadow-md rounded">
       <h2>{isEditing ? "Editar Acomodação" : "Nova Acomodação"}</h2>
 
-      {/* Nome */}
       <Form.Group className="form-floating mb-3">
         <Form.Control
           type="text"
@@ -164,7 +116,6 @@ const handleRemoveFile = (id) => {
         <Form.Label>Nome da Acomodação</Form.Label>
       </Form.Group>
 
-      {/* Campos na mesma linha */}
       <div className="form-row d-flex gap-2">
         <Form.Group className="form-floating flex-grow-1">
           <Form.Control
@@ -203,18 +154,21 @@ const handleRemoveFile = (id) => {
         </Form.Group>
       </div>
 
-      {/* Descrição */}
       <Form.Group className="form-floating mb-3">
         <ReactQuill value={formData.description} onChange={(value) => setFormData({ ...formData, description: value })} />
       </Form.Group>
 
-      {/* Upload de arquivos */}
-      <div className="bg-gray-100 p-8">
+      {/* Nova área de upload de mídia utilizando o MediaUploader */}
+      <div className="bg-gray-100 p-4">
         <h3 className="text-2xl font-bold mb-4">Media Upload</h3>
-        <MediaDropZone items={mediaFiles} onItemsChange={handleFileUpload} />
+        <MediaUploader
+          ref={mediaUploaderRef}
+          initialFiles={mediaFiles}
+          accommodationName={formData.name}
+          accommodationId={isEditing ? isEditing.id : formData.name}  
+        />
       </div>
 
-      {/* Comodidades */}
       <label className="mt-3 fw-bold">Comodidades:</label>
       <div className="utilities-container d-flex flex-wrap">
         {amenitiesList.map((amenity) => (
@@ -237,7 +191,10 @@ const handleRemoveFile = (id) => {
 
       <div className="button-group mt-4">
         <Button type="submit">{isEditing ? "Salvar Alterações" : "Criar Acomodação"}</Button>
-        <Button variant="secondary" className="ms-2" onClick={() => setFormData({ name: "", description: "", baseOccupancy: 1, maxOccupancy: 1, unitsAvailable: 0, files: [], amenities: [] })}>
+        <Button variant="secondary" className="ms-2" onClick={() => {
+          setFormData({ name: "", description: "", baseOccupancy: 1, maxOccupancy: 1, unitsAvailable: 0, files: [], amenities: [] });
+          setMediaFiles([]);
+        }}>
           {isEditing ? "Cancelar Alterações" : "Limpar Campos"}
         </Button>
       </div>

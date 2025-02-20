@@ -41,9 +41,9 @@ export const AccommodationProvider = ({ children }) => {
     try {
       await verifyAdmin();
       if (isEditing?.id) {
-        await updateAccommodation(isEditing.id, formData);
+        await updateAccommodation(isEditing.id, formData, verifyAdmin);
       } else {
-        await addAccommodation(formData);
+        await addAccommodation(formData, verifyAdmin);
       }
       setIsEditing(null);
       setAccommodations(await fetchAllAccommodations());
