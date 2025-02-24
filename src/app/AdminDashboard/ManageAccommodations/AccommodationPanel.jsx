@@ -14,9 +14,19 @@ const PanelContainer = styled.div`
 
 const PanelHeader = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   margin-bottom: 15px;
+`;
+
+const HeaderTitle = styled.h2`
+  margin: 0;
+  margin-bottom: 10px;
+`;
+
+const ModeButtons = styled.div`
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
 `;
 
 const CardsContainer = styled.div`
@@ -27,32 +37,38 @@ const CardsContainer = styled.div`
 
 const CardContainer = styled.div`
   width: 100%;
+  box-sizing: border-box;
   position: relative;
   margin-bottom: 16px;
-  border: 2px solid transparent;
+  border: 1px solid #ccc;
   border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
-  transition: border-color 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
+  height: ${props => (props.mode === "medium" ? "300px" : "180px")};
 
   &.selected {
-    border-color: blue;
+    border: 1px solid blue;
   }
 
-  /* Layout horizontal em telas pequenas */
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+
   @media (max-width: 767px) {
     flex-direction: row;
     align-items: center;
+    height: ${props => (props.mode === "medium" ? "300px" : "180px")};
   }
 `;
 
 const CardImage = styled.img`
   width: 100%;
-  height: 150px;
+  height: ${props => (props.mode === "medium" ? "180px" : "120px")};
   object-fit: cover;
-
+  
   @media (max-width: 767px) {
     width: 120px;
     height: 100%;
@@ -63,8 +79,14 @@ const CardContent = styled.div`
   padding: 12px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: ${props => (props.mode === "medium" ? "flex-start" : "center")};
   flex: 1;
+  overflow: hidden;
+`;
+
+const MediumContent = styled.div`
+  margin-top: 8px;
+  overflow: auto;
 `;
 
 const DeleteButtonStyled = styled.button`
@@ -111,7 +133,7 @@ const AccommodationPanel = () => {
     selectedAccommodation,
     hasUnsavedChanges,
   } = useAccommodations();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [cardMode, setCardMode] = useState("small"); // "small" ou "medium"
 
   const handleSelect = (acc) => {
     if (hasUnsavedChanges && !window.confirm("Existem alterações não salvas. Deseja continuar e perder as mudanças?")) {
@@ -130,32 +152,53 @@ const AccommodationPanel = () => {
   return (
     <PanelContainer>
       <PanelHeader>
-        <h2>Acomodações</h2>
-        <div>
-          <Button variant="secondary" onClick={() => selectAccommodation(null)}>Limpar Seleção</Button>
-          <Button variant="primary" className="ms-2" onClick={() => setIsCollapsed(!isCollapsed)}>
-            {isCollapsed ? "Expandir" : "Reduzir"}
+        <HeaderTitle>Acomodações</HeaderTitle>
+        <ModeButtons>
+          <Button
+            variant={cardMode === "small" ? "primary" : "outline-primary"}
+            onClick={() => setCardMode("small")}
+          >
+            Pequeno
           </Button>
-        </div>
+          <Button
+            variant={cardMode === "medium" ? "primary" : "outline-primary"}
+            onClick={() => setCardMode("medium")}
+          >
+            Médio
+          </Button>
+          <Button variant="secondary" onClick={() => selectAccommodation(null)}>
+            Limpar Seleção
+          </Button>
+        </ModeButtons>
       </PanelHeader>
       <CardsContainer>
         {accommodations.length > 0 ? (
           accommodations.map((acc) => (
             <CardContainer
               key={acc.id}
+              mode={cardMode}
               className={selectedAccommodation?.id === acc.id ? "selected" : ""}
               onClick={() => handleSelect(acc)}
             >
-              <CardImage src={acc.files?.length ? acc.files[0].url : "/default-placeholder.png"} alt={acc.name} />
-              <CardContent>
+              <CardImage
+                src={acc.files?.length ? acc.files[0].url : "/default-placeholder.png"}
+                alt={acc.name}
+                mode={cardMode}
+              />
+              <CardContent mode={cardMode}>
                 <h5 style={{ margin: 0 }}>{acc.name}</h5>
                 <p style={{ margin: 0 }}>{acc.unitsAvailable} unidades disponíveis</p>
-                {acc.amenities && (
-                  <AmenitiesContainer>
-                    {acc.amenities.map((a) => (
-                      <AmenityBadge key={a}>{a}</AmenityBadge>
-                    ))}
-                  </AmenitiesContainer>
+                {cardMode === "medium" && (
+                  <MediumContent>
+                    <p>{acc.description}</p>
+                    {acc.amenities && (
+                      <AmenitiesContainer>
+                        {acc.amenities.map((a) => (
+                          <AmenityBadge key={a}>{a}</AmenityBadge>
+                        ))}
+                      </AmenitiesContainer>
+                    )}
+                  </MediumContent>
                 )}
               </CardContent>
               <DeleteButtonStyled onClick={(e) => handleDelete(acc.id, e)}>

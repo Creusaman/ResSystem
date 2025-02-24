@@ -34,23 +34,21 @@ const amenitiesList = [
   { id: "Spa", label: "Spa", icon: <FaHotTub /> },
 ];
 
+const initialFormState = {
+  name: "",
+  description: "",
+  baseOccupancy: "",
+  maxOccupancy: "",
+  unitsAvailable: "",
+  files: [],
+  amenities: [],
+};
+
 function AccommodationForm() {
-  const { isEditing, saveAccommodation, setHasUnsavedChanges } = useAccommodations();
-
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    baseOccupancy: 1,
-    maxOccupancy: 1,
-    unitsAvailable: 0,
-    files: [],
-    amenities: [],
-  });
-
-  // Estado para armazenar os arquivos de mídia
+  const { isEditing, saveAccommodation, setHasUnsavedChanges, selectAccommodation } = useAccommodations();
+  const [formData, setFormData] = useState(initialFormState);
   const [mediaFiles, setMediaFiles] = useState([]);
-
-  // Ref para acessar o método saveMedia do MediaUploader
+  const [formError, setFormError] = useState("");
   const mediaUploaderRef = useRef();
 
   useEffect(() => {
@@ -58,17 +56,9 @@ function AccommodationForm() {
       setFormData({ ...isEditing });
       setMediaFiles(isEditing.files || []);
     } else {
-      setFormData({
-        name: "",
-        description: "",
-        baseOccupancy: 1,
-        maxOccupancy: 1,
-        unitsAvailable: 0,
-        files: [],
-        amenities: [],
-      });
-      setMediaFiles([]);
+      clearForm();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEditing]);
 
   const handleChange = (e) => {
@@ -85,23 +75,48 @@ function AccommodationForm() {
     }));
   };
 
+  // Função que limpa completamente o formulário e a seleção,
+  // garantindo que o flag de alterações não salvas seja zerado antes de deselecionar.
+  const clearForm = () => {
+    setHasUnsavedChanges(false);
+    setFormData(initialFormState);
+    setMediaFiles([]);
+    selectAccommodation(null);
+    setFormError("");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Validação dos campos obrigatórios
+    if (
+      !formData.name.trim() ||
+      !formData.description.trim() ||
+      formData.baseOccupancy === "" ||
+      formData.maxOccupancy === "" ||
+      formData.unitsAvailable === ""
+    ) {
+      setFormError("Por favor, preencha todos os campos obrigatórios.");
+      return;
+    }
+    setFormError("");
     try {
-      // Obtém a lista final de mídias através do MediaUploader
       const finalFiles = await mediaUploaderRef.current.saveMedia();
-      // Removemos o campo "id" se existir – para novos documentos, não enviamos o campo "id"
+      // Removemos o campo "id" para novos documentos; se for edição, o id vem do isEditing
       const { id, ...dataWithoutId } = formData;
       const updatedData = { ...dataWithoutId, files: finalFiles };
       await saveAccommodation(updatedData);
+      clearForm();
     } catch (error) {
       console.error("Erro ao salvar acomodação:", error);
+      setFormError("Erro ao salvar acomodação. Verifique os dados e tente novamente.");
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="p-4 bg-white shadow-md rounded">
       <h2>{isEditing ? "Editar Acomodação" : "Nova Acomodação"}</h2>
+
+      {formError && <div className="error-message">{formError}</div>}
 
       <Form.Group className="form-floating mb-3">
         <Form.Control
@@ -192,18 +207,7 @@ function AccommodationForm() {
 
       <div className="button-group mt-4">
         <Button type="submit">{isEditing ? "Salvar Alterações" : "Criar Acomodação"}</Button>
-        <Button variant="secondary" className="ms-2" onClick={() => {
-          setFormData({
-            name: "",
-            description: "",
-            baseOccupancy: 1,
-            maxOccupancy: 1,
-            unitsAvailable: 0,
-            files: [],
-            amenities: [],
-          });
-          setMediaFiles([]);
-        }}>
+        <Button variant="secondary" className="ms-2" onClick={clearForm}>
           {isEditing ? "Cancelar Alterações" : "Limpar Campos"}
         </Button>
       </div>

@@ -33,13 +33,22 @@ export const AccommodationProvider = ({ children }) => {
     loadAccommodations();
   }, []);
 
-  const selectAccommodation = (accommodation) => {
-    if (hasUnsavedChanges && !window.confirm("Existem alterações não salvas. Deseja continuar?")) {
+// AccommodationContext.jsx (alteração na função selectAccommodation)
+const selectAccommodation = (accommodation) => {
+    // Se for para limpar a seleção, não pede confirmação
+    if (accommodation === null) {
+      setIsEditing(null);
+      setHasUnsavedChanges(false);
       return;
     }
-    setIsEditing(accommodation ? { ...accommodation } : null); // Salva snapshot
+    // Para seleção de uma acomodação existente, se houver alterações não salvas, confirma antes de trocar.
+    if (hasUnsavedChanges && !window.confirm("Existem alterações não salvas. Deseja continuar e perder as mudanças?")) {
+      return;
+    }
+    setIsEditing({ ...accommodation });
     setHasUnsavedChanges(false);
   };
+  
 
   const saveAccommodation = async (formData) => {
     setLoading(true);

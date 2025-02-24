@@ -114,14 +114,24 @@ const DeleteButton = styled.button`
   }
 `;
 
+const ProgressBar = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 5px;
+  background: green;
+  width: ${props => props.progress}%;
+  transition: width 0.3s ease;
+`;
+
 
 
 // Componente SortableItem para cada card
-const SortableItem = ({ id, file, onCaptionChange, onDelete }) => {
+const SortableItem = ({ id, file, onCaptionChange, onDelete, progress }) => {
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
     const style = {
       transform: CSS.Transform.toString(transform),
-      transition: transition || 'transform 300ms ease',
+      transition: transition || 'transform 0ms ease',
     };
   
     return (
@@ -143,6 +153,7 @@ const SortableItem = ({ id, file, onCaptionChange, onDelete }) => {
             onChange={(e) => onCaptionChange(file.id, e.target.value)}
           />
         </FileInfo>
+        {file.status === 'new' && <ProgressBar progress={progress || 0} />}
       </MediaCard>
     );
   };
@@ -150,6 +161,7 @@ const SortableItem = ({ id, file, onCaptionChange, onDelete }) => {
   const MediaUploader = forwardRef(({ initialFiles = [], accommodationName, accommodationId }, ref) => {
     const [files, setFiles] = useState([]);
     const { verifyAdmin } = useAuth();
+    const [uploadProgress, setUploadProgress] = useState({});
   
     useEffect(() => {
       const processed = initialFiles.map(file => ({
@@ -177,7 +189,7 @@ const SortableItem = ({ id, file, onCaptionChange, onDelete }) => {
       onDrop,
       accept: 'image/jpeg, image/png, image/webp, video/mp4'
     });
-  
+    
     const sensors = useSensors(
       useSensor(PointerSensor, { activationConstraint: { delay: 0, tolerance: 0 } }),
       useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } })
@@ -207,35 +219,43 @@ const SortableItem = ({ id, file, onCaptionChange, onDelete }) => {
     };
   
     const saveMedia = async () => {
-      const deletionPromises = files
-        .filter(f => f.status === 'deleted' && f.path)
-        .map(async f => await deleteFiles(f.path, verifyAdmin));
-      await Promise.all(deletionPromises);
-  
-      const uploadPromises = files
-        .filter(f => f.status === 'new')
-        .map(async (f, index) => {
-          const uploadedFile = await uploadFiles(f.file, accommodationName, accommodationId, verifyAdmin);
-          return {
-            id: uploadedFile.id,
-            url: uploadedFile.url,
-            path: uploadedFile.path,
-            caption: f.caption || f.name,
-            order: index
-          };
-        });
-      const uploadedFiles = await Promise.all(uploadPromises);
-  
-      const existingFiles = files
-        .filter(f => f.status === 'existing')
-        .map((f, index) => ({
-          ...f,
-          order: index,
-          caption: f.caption || f.name
-        }));
-  
-      return [...existingFiles, ...uploadedFiles];
-    };
+        const deletionPromises = files
+          .filter(f => f.status === 'deleted' && f.path)
+          .map(async f => await deleteFiles(f.path, verifyAdmin));
+        await Promise.all(deletionPromises);
+    
+        const uploadPromises = files
+          .filter(f => f.status === 'new')
+          .map(async (f, index) => {
+            const uploadedFile = await uploadFiles(
+              f.file,
+              accommodationName,
+              accommodationId,
+              verifyAdmin,
+              (progress) => {
+                setUploadProgress(prev => ({ ...prev, [f.id]: progress }));
+              }
+            );
+            return {
+              id: uploadedFile.id,
+              url: uploadedFile.url,
+              path: uploadedFile.path,
+              caption: f.caption || f.name,
+              order: index
+            };
+          });
+        const uploadedFiles = await Promise.all(uploadPromises);
+    
+        const existingFiles = files
+          .filter(f => f.status === 'existing')
+          .map((f, index) => ({
+            ...f,
+            order: index,
+            caption: f.caption || f.name
+          }));
+    
+        return [...existingFiles, ...uploadedFiles];
+      };
   
     useImperativeHandle(ref, () => ({
       saveMedia
